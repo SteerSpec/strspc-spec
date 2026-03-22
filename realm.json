@@ -1,0 +1,16 @@
+{
+  "$schema": "./_schema/realm.v1.schema.json",
+  "realm": {
+    "id": "dev.steerspec.platform",
+    "title": "SteerSpec Platform",
+    "version": "0.1.0-draft"
+  },
+  "dependencies": [
+    {
+      "realm_id": "dev.steerspec.core",
+      "version": "0.1.0",
+      "source": "github://steerspec/strspc-rules@v0.1.0/rules/core"
+    }
+  ],
+  "rule_identifier_format": null
+}

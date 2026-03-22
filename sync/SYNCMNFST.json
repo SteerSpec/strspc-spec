@@ -1,0 +1,89 @@
+{
+  "$schema": "./_schema/entity.v1.schema.json",
+  "entity": {
+    "id": "SYNCMFST",
+    "title": "SyncManifest",
+    "description": "The central configuration for synchronizing AI configuration files across a GitHub organization."
+  },
+  "rule_set": {
+    "version": "0.1.0-draft",
+    "timestamp": "2026-03-07T00:00:00Z",
+    "hash": null
+  },
+  "rules": [
+    {
+      "id": "SYNCMFST-001",
+      "revision": 0,
+      "state": "D",
+      "body": "IS the central configuration for synchronizing AI configuration files across a GitHub organization.",
+      "added_by": "@pleberre",
+      "added_at": "2026-03-07",
+      "supersedes": null
+    },
+    {
+      "id": "SYNCMFST-002",
+      "revision": 0,
+      "state": "D",
+      "body": "MUST be stored in a dedicated central repository (source of truth).",
+      "added_by": "@pleberre",
+      "added_at": "2026-03-07",
+      "supersedes": null
+    },
+    {
+      "id": "SYNCMFST-003",
+      "revision": 0,
+      "state": "D",
+      "body": "MUST define at least one Template.",
+      "added_by": "@pleberre",
+      "added_at": "2026-03-07",
+      "supersedes": null
+    },
+    {
+      "id": "SYNCMFST-004",
+      "revision": 0,
+      "state": "D",
+      "body": "MUST define a ComponentRegistry.",
+      "added_by": "@pleberre",
+      "added_at": "2026-03-07",
+      "supersedes": null
+    },
+    {
+      "id": "SYNCMFST-005",
+      "revision": 0,
+      "state": "D",
+      "body": "HAS a manifest version in semver format.",
+      "added_by": "@pleberre",
+      "added_at": "2026-03-07",
+      "supersedes": null
+    },
+    {
+      "id": "SYNCMFST-006",
+      "revision": 0,
+      "state": "D",
+      "body": "MUST be expressed as YAML named `steerspec-sync.yml` at the repository root.",
+      "added_by": "@pleberre",
+      "added_at": "2026-03-07",
+      "supersedes": null
+    },
+    {
+      "id": "SYNCMFST-007",
+      "revision": 0,
+      "state": "D",
+      "body": "MAY define global template variables.",
+      "added_by": "@pleberre",
+      "added_at": "2026-03-07",
+      "supersedes": null
+    },
+    {
+      "id": "SYNCMFST-008",
+      "revision": 0,
+      "state": "D",
+      "body": "HAS a Blake3 hash for integrity verification.",
+      "added_by": "@pleberre",
+      "added_at": "2026-03-07",
+      "supersedes": null
+    }
+  ],
+  "sub_entities": [],
+  "notes": []
+}
