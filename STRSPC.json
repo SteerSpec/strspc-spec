@@ -1,0 +1,16 @@
+{
+  "$schema": "./_schema/entity.v1.schema.json",
+  "entity": {
+    "id": "STRSPC",
+    "title": "SteerSpec Platform",
+    "description": "The SteerSpec platform for managing AI configuration specifications across organizations. Encompasses CLI, Manager, Sync, and Cloud components."
+  },
+  "rule_set": {
+    "version": "0.1.0-draft",
+    "timestamp": "2026-03-22T00:00:00Z",
+    "hash": null
+  },
+  "rules": [],
+  "sub_entities": [],
+  "notes": []
+}

@@ -1,61 +1,72 @@
-# SteerSpec Sync
+# SteerSpec Platform
 
-**Keeping AI configuration files consistent across your GitHub organization.**
+**The specification realm for the SteerSpec platform, defined using SteerSpec's own rule format.**
 
-## Problem
+## Overview
 
-Teams using Claude Code maintain `CLAUDE.md` files, `.claude/agents/`, `.claude/skills/`, and other AI configuration across many repositories. As organizations grow, these files drift apart: best practices aren't propagated, conflicting instructions appear, and new repos miss critical setup. Manual synchronization doesn't scale.
+This repository is the `dev.steerspec.platform` realm -- the formal specification for all SteerSpec components. It dogfoods the SteerSpec toolchain: entities are JSON files validated by `strspc-CLI` and `strspc-manager`, organized as a realm with sub-realms per component.
 
-## How It Works
+Core rule format definitions (keywords, rule format, entity format) live in `dev.steerspec.core` ([strspc-rules](https://github.com/steerspec/strspc-rules)) and are declared as a dependency.
 
-SteerSpec Sync formalizes a pattern for managing AI configuration files across a GitHub organization:
+## Realm Structure
 
-1. **Central Source of Truth** -- A dedicated repository holds canonical templates for all managed AI configuration files (`CLAUDE.md`, `.claude/agents/*.md`, `.claude/skills/*.md`, `.claude/settings/`).
+```
+strspc-spec/
+├── realm.json          # dev.steerspec.platform
+├── _schema/            # Validation schemas (from dev.steerspec.core)
+├── STRSPC.json         # SteerSpec Platform entity
+├── cli/                # dev.steerspec.platform.cli (stub)
+├── manager/            # dev.steerspec.platform.manager (stub)
+├── sync/               # dev.steerspec.platform.sync (166 rules)
+├── cloud/              # dev.steerspec.platform.cloud (stub)
+└── VERSION
+```
 
-2. **Template Distribution** -- A sync action renders templates with per-repo variables and opens pull requests in target repositories. PRs are updated in place and stale version PRs are automatically closed.
+## Sub-Realms
 
-3. **Monitoring** -- A scheduled action verifies that target repositories are running the expected versions, creating issues in the central repo when drift is detected.
+### sync/ -- SteerSpec Sync
 
-4. **Conflict Detection** -- A scheduled action scans target repositories for version drift, manual overrides of managed sections, broken cross-references, duplicate skills, and contradictory instructions.
+Specification for keeping AI configuration files consistent across a GitHub organization. 166 rules across 16 entities.
 
-## Sync Scope
+| File | Entity | Rules | Description |
+|------|--------|-------|-------------|
+| `SYNCMNFST.json` | SYNCMFST | 8 | Central sync configuration |
+| `TMPL.json` | TMPLT + TMPLTVRS | 8 + 5 | Templates and versioned snapshots |
+| `COMPREG.json` | CMPREG + CMPTGT | 5 + 6 | Target repository registry |
+| `SYNCOP.json` | SYNCOP + SYNCPR | 8 + 6 | Sync operations and pull requests |
+| `DEPLST.json` | DPLYST | 5 | Deployment state tracking |
+| `SYNCFG.json` | SYNCCFG | 25 | Configuration schema (steerspec-sync.yml) |
+| `SYNCVER.json` | SYNCVRS | 10 | Versioning strategy |
+| `SYNCACT.json` | SYNCACT | 22 | Sync GitHub Action |
+| `MONACT.json` | MNRACT | 17 | Monitor GitHub Action |
+| `CNFLACT.json` | CNFLACT | 15 | Conflict detection GitHub Action |
+| `CNFL.json` | CNFLRPT + CNFLENT + CNFLDTS | 5 + 13 + 8 | Conflict detection and resolution |
 
-SteerSpec Sync manages the full Claude Code configuration surface:
+### cli/ -- SteerSpec CLI
 
-- `CLAUDE.md` (project root and nested)
-- `.claude/agents/*.md`
-- `.claude/skills/*.md`
-- `.claude/settings/`
-- Any custom AI configuration files
+Specification for the command-line tool. Populates as features are built in [strspc-CLI](https://github.com/steerspec/strspc-CLI).
 
-## Configuration
+### manager/ -- SteerSpec Manager
 
-Configuration is defined in `steerspec-sync.yml` at the root of the central repository. See [rules/config/CONFIG.md](rules/config/CONFIG.md) for the full schema.
+Specification for the core enforcement engine. Populates as features are built in [strspc-manager](https://github.com/steerspec/strspc-manager).
 
-## Specification
+### cloud/ -- SteerSpec Cloud
 
-The full specification is written using the SteerSpec rule format (`[ENTITY-###.VERSION/STATE]`). See [rules/README.md](rules/README.md) for the domain index and entity summary.
+Specification for the SaaS service. Populates as features are built in [strspc-cloud](https://github.com/steerspec/strspc-cloud).
 
-### Rule Format Reference
+## Dependencies
 
-This specification is self-contained and includes its own copies of the core SteerSpec rule format definitions:
+This realm depends on `dev.steerspec.core` (v0.1.0) for core rule format definitions including RFC-2119 keywords, rule identifiers, entity format, and realm structure.
 
-- [rules/core/KEYWORDS.md](rules/core/KEYWORDS.md) -- RFC-2119 keywords
-- [rules/core/RULE_FORMAT.md](rules/core/RULE_FORMAT.md) -- Rule identifier format, entities, states
+## Dogfooding
 
-### Domain-Specific Rules
+This repo is both the specification and the test bed for SteerSpec tooling:
 
-- [rules/core/SYNC_CORE.md](rules/core/SYNC_CORE.md) -- Core sync entities
-- [rules/config/CONFIG.md](rules/config/CONFIG.md) -- Configuration schema
-- [rules/versioning/VERSIONING.md](rules/versioning/VERSIONING.md) -- Versioning strategy
-- [rules/actions/SYNC_ACTION.md](rules/actions/SYNC_ACTION.md) -- Sync GitHub Action
-- [rules/actions/MONITOR_ACTION.md](rules/actions/MONITOR_ACTION.md) -- Monitor GitHub Action
-- [rules/actions/CONFLICT_ACTION.md](rules/actions/CONFLICT_ACTION.md) -- Conflict detection GitHub Action
-- [rules/conflicts/CONFLICTS.md](rules/conflicts/CONFLICTS.md) -- Conflict detection entities
+- **Validate**: `strspc realm validate` checks realm structure and entity schemas
+- **Render**: `strspc render sync/SYNCMNFST.json` renders entities to readable markdown
+- **Lint**: `strspc lint sync/` validates entity files against schemas (coming soon)
 
-## Reference Implementation
-
-A reference implementation is RECOMMENDED in Go, packaged as a composite GitHub Action. See the action specs under [rules/actions/](rules/actions/) for input/output contracts.
+As new features land in `-CLI` and `-manager`, they are specified here first and then validated by the very tools being built.
 
 ## Version
 
