@@ -1,0 +1,42 @@
+name: CI
+
+# This repo is a specification expressed almost entirely as JSON (32 of 34
+# files), so "does every JSON file parse" is a real check rather than a
+# formality — a trailing comma in a schema is exactly the kind of breakage
+# that otherwise reaches consumers.
+#
+# It also exists so PRs here have at least one check run. The org ruleset
+# requires an approving review, pr-auto-approve supplies it, and it will not
+# approve a PR with no checks (allow-no-checks defaults to false, deliberately:
+# approving with zero CI evidence would rest the whole gate on Copilot alone).
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-json:
+    name: validate-json
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Every JSON file must parse
+        run: |
+          set -euo pipefail
+          fail=0
+          while IFS= read -r -d '' f; do
+            if ! python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$f"; then
+              echo "::error file=$f::invalid JSON"
+              fail=1
+            fi
+          done < <(find . -name '*.json' -not -path './.git/*' -print0)
+          if [ "$fail" -ne 0 ]; then
+            echo "One or more JSON files are invalid."
+            exit 1
+          fi
+          echo "All JSON files parse."
