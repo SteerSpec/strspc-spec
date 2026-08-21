@@ -1,0 +1,73 @@
+name: CI
+
+# This repo had no PR-triggered workflow, which under the org ruleset meant its
+# PRs could never be approved: pr-auto-approve refuses to approve a PR with no
+# check runs, deliberately, so an approval always rests on evidence.
+#
+# The evidence here is the spec validating against its own schemas.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install jsonschema
+        run: pip install --quiet jsonschema
+
+      - name: Every JSON validates against the schema it declares
+        run: |
+          python3 - <<'PY'
+          import json, pathlib, sys
+          from jsonschema import Draft202012Validator
+
+          # Each instance file names its own schema relative to its own
+          # directory (e.g. sync/TMPL.json -> ./_schema/entity.v1.schema.json),
+          # so the mapping is read from the file rather than hard-coded here.
+          # A spec file added tomorrow is validated the day it lands, and moving
+          # one between component directories cannot silently unvalidate it.
+          rc = 0
+          for f in sorted(pathlib.Path('.').rglob('*.json')):
+              if '.git' in f.parts:
+                  continue
+              try:
+                  doc = json.loads(f.read_text())
+              except json.JSONDecodeError as e:
+                  print(f"::error file={f}::invalid JSON: {e}"); rc = 1; continue
+
+              # Schema files are checked against the metaschema instead: they
+              # declare the remote draft-2020-12 URL, and fetching it in CI
+              # would make this check depend on a third-party host being up.
+              if f.parent.name == '_schema':
+                  try:
+                      Draft202012Validator.check_schema(doc)
+                  except Exception as e:
+                      print(f"::error file={f}::not a valid JSON Schema: {e}"); rc = 1
+                  continue
+
+              ref = doc.get('$schema')
+              if not ref:
+                  print(f"::error file={f}::no $schema declared, so nothing validates it"); rc = 1; continue
+              schema_path = (f.parent / ref).resolve()
+              if not schema_path.exists():
+                  print(f"::error file={f}::$schema points at {ref}, which does not exist"); rc = 1; continue
+
+              schema = json.loads(schema_path.read_text())
+              for e in sorted(Draft202012Validator(schema).iter_errors(doc), key=lambda e: list(e.path)):
+                  loc = '/'.join(map(str, e.path)) or '<root>'
+                  print(f"::error file={f}::{loc}: {e.message}"); rc = 1
+          sys.exit(rc)
+          PY
