@@ -26,27 +26,36 @@ jobs:
           python-version: '3.12'
 
       - name: Install jsonschema
-        run: pip install --quiet jsonschema
+        # Pinned. This job is a required gate, so an upstream release that
+        # tightened validation would fail existing specs on an unrelated PR,
+        # with nothing in the diff to explain it.
+        run: pip install --quiet jsonschema==4.26.0
 
       - name: Every JSON validates against the schema it declares
         run: |
           python3 - <<'PY'
           import json, pathlib, sys
           from jsonschema import Draft202012Validator
+          from jsonschema.exceptions import SchemaError
 
-          # Each instance file names its own schema relative to its own
-          # directory (e.g. sync/TMPL.json -> ./_schema/entity.v1.schema.json),
-          # so the mapping is read from the file rather than hard-coded here.
-          # A spec file added tomorrow is validated the day it lands, and moving
-          # one between component directories cannot silently unvalidate it.
+          ROOT = pathlib.Path('.').resolve()
           rc = 0
-          for f in sorted(pathlib.Path('.').rglob('*.json')):
+
+          def load(path):
+              """Read JSON, reporting a parse failure as an annotation rather than
+              a traceback -- one bad file should not hide every other result."""
+              try:
+                  return json.loads(path.read_text(encoding='utf-8')), None
+              except (OSError, UnicodeDecodeError, json.JSONDecodeError) as e:
+                  return None, str(e)
+
+          for f in sorted(ROOT.rglob('*.json')):
               if '.git' in f.parts:
                   continue
-              try:
-                  doc = json.loads(f.read_text())
-              except json.JSONDecodeError as e:
-                  print(f"::error file={f}::invalid JSON: {e}"); rc = 1; continue
+              rel = f.relative_to(ROOT)
+              doc, err = load(f)
+              if err:
+                  print(f"::error file={rel}::invalid JSON: {err}"); rc = 1; continue
 
               # Schema files are checked against the metaschema instead: they
               # declare the remote draft-2020-12 URL, and fetching it in CI
@@ -54,20 +63,35 @@ jobs:
               if f.parent.name == '_schema':
                   try:
                       Draft202012Validator.check_schema(doc)
-                  except Exception as e:
-                      print(f"::error file={f}::not a valid JSON Schema: {e}"); rc = 1
+                  except SchemaError as e:
+                      print(f"::error file={rel}::not a valid JSON Schema: {e.message}"); rc = 1
                   continue
 
               ref = doc.get('$schema')
               if not ref:
-                  print(f"::error file={f}::no $schema declared, so nothing validates it"); rc = 1; continue
-              schema_path = (f.parent / ref).resolve()
-              if not schema_path.exists():
-                  print(f"::error file={f}::$schema points at {ref}, which does not exist"); rc = 1; continue
+                  print(f"::error file={rel}::no $schema declared, so nothing validates it"); rc = 1; continue
 
-              schema = json.loads(schema_path.read_text())
-              for e in sorted(Draft202012Validator(schema).iter_errors(doc), key=lambda e: list(e.path)):
+              # $schema is about to be used as a path, so constrain it to one:
+              # a URI, an absolute path or a ..-escape would send this reading
+              # files outside the repo and fail in confusing ways.
+              if '://' in ref or pathlib.PurePosixPath(ref).is_absolute():
+                  print(f"::error file={rel}::$schema must be a relative path, got '{ref}'"); rc = 1; continue
+              schema_path = (f.parent / ref).resolve()
+              if not schema_path.is_relative_to(ROOT):
+                  print(f"::error file={rel}::$schema '{ref}' escapes the repository"); rc = 1; continue
+              if not schema_path.exists():
+                  print(f"::error file={rel}::$schema points at '{ref}', which does not exist"); rc = 1; continue
+
+              schema, err = load(schema_path)
+              if err:
+                  print(f"::error file={rel}::its schema {ref} is unreadable: {err}"); rc = 1; continue
+              try:
+                  validator = Draft202012Validator(schema)
+              except SchemaError as e:
+                  print(f"::error file={rel}::its schema {ref} is not a valid JSON Schema: {e.message}"); rc = 1; continue
+
+              for e in sorted(validator.iter_errors(doc), key=lambda e: list(e.path)):
                   loc = '/'.join(map(str, e.path)) or '<root>'
-                  print(f"::error file={f}::{loc}: {e.message}"); rc = 1
+                  print(f"::error file={rel}::{loc}: {e.message}"); rc = 1
           sys.exit(rc)
           PY
