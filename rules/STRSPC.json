@@ -1,0 +1,70 @@
+{
+  "$schema": "./_schema/entity.v1.schema.json",
+  "entity": {
+    "id": "STRSPC",
+    "title": "SteerSpec Platform",
+    "description": "The SteerSpec platform: the rule format (strspc-rules), the enforcement engine (strspc-manager), the CLI, the configuration sync tool and the planned cloud service. Rules here are cross-cutting; each component owns its own realm."
+  },
+  "rule_set": {
+    "version": "0.1.7",
+    "timestamp": "2026-10-19T19:56:29Z",
+    "hash": "blake3:dba0c3183c113ab6cd7db7480d9b762832effef0ee0715bc7516ea3e233264e4"
+  },
+  "rules": [
+    {
+      "id": "STRSPC-001",
+      "revision": 0,
+      "state": "D",
+      "body": "Dependencies MUST point downward only: strspc-rules is consumed by strspc-manager, which is imported by strspc-CLI and strspc-cloud, and a lower tier MUST NOT import a higher one.",
+      "added_by": "@pleberre",
+      "added_at": "2026-10-19",
+      "supersedes": null
+    },
+    {
+      "id": "STRSPC-002",
+      "revision": 0,
+      "state": "D",
+      "body": "Releases MUST land upstream first (strspc-rules, then strspc-manager, then strspc-CLI and strspc-cloud), each consumer pinning a released version of the tier it depends on.",
+      "added_by": "@pleberre",
+      "added_at": "2026-10-19",
+      "supersedes": null
+    },
+    {
+      "id": "STRSPC-003",
+      "revision": 0,
+      "state": "D",
+      "body": "Every SteerSpec repository MUST own its rules as a SteerSpec realm in that repository, and every realm other than dev.steerspec.core MUST depend on dev.steerspec.core at a released version.",
+      "added_by": "@pleberre",
+      "added_at": "2026-10-19",
+      "supersedes": null
+    },
+    {
+      "id": "STRSPC-004",
+      "revision": 0,
+      "state": "D",
+      "body": "Every repository's CI MUST validate its realm and the lifecycle of its rules on each pull request.",
+      "added_by": "@pleberre",
+      "added_at": "2026-10-19",
+      "supersedes": null
+    },
+    {
+      "id": "STRSPC-005",
+      "revision": 0,
+      "state": "D",
+      "body": "A Published or Implemented rule MUST NOT be edited; a change MUST be expressed as a new rule that supersedes it.",
+      "added_by": "@pleberre",
+      "added_at": "2026-10-19",
+      "supersedes": null
+    },
+    {
+      "id": "STRSPC-006",
+      "revision": 0,
+      "state": "D",
+      "body": "Rule validation, diffing, evaluation and resolution logic MUST live in strspc-manager, and the CLI and cloud tiers MUST only present its results.",
+      "added_by": "@pleberre",
+      "added_at": "2026-10-19",
+      "supersedes": null
+    }
+  ],
+  "notes": []
+}
