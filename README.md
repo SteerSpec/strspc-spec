@@ -36,7 +36,7 @@ strspc-spec/
 | ---- | --------- |
 | STRSPC-001 | Dependencies point downward only: rules → manager → CLI / cloud |
 | STRSPC-002 | Releases land upstream first, each consumer pinning a released version |
-| STRSPC-003 | Every repository owns its rules as a realm on `dev.steerspec.core` |
+| STRSPC-003 | Every repository owns a realm; non-core realms depend on core |
 | STRSPC-004 | Every repository's CI validates its realm and lifecycle per PR |
 | STRSPC-005 | Published and Implemented rules are never edited, only superseded |
 | STRSPC-006 | Rule logic lives in strspc-manager; CLI and cloud only present its results |
