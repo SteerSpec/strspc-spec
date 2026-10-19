@@ -1,77 +1,55 @@
 # SteerSpec Platform
 
-**The specification realm for the SteerSpec platform, defined using SteerSpec's own rule format.**
+**The cross-cutting specification of the SteerSpec platform, written as a SteerSpec realm.**
 
 ## Overview
 
-This repository is the `dev.steerspec.platform` realm -- the formal specification for all SteerSpec components. It dogfoods the SteerSpec toolchain: entities are JSON files validated by `strspc-CLI` and `strspc-manager`, organized as a realm with sub-realms per component.
+This repository is the `dev.steerspec.platform` realm. It holds the rules that span the whole
+platform: how the tiers depend on each other, in which order they release, that every component
+owns its rules as a realm and validates them in CI, that published rules are immutable, and where
+rule logic lives.
 
-Core rule format definitions (keywords, rule format, entity format) live in `dev.steerspec.core` ([strspc-rules](https://github.com/steerspec/strspc-rules)) and are declared as a dependency.
+Component specifications live with their code:
 
-## Realm Structure
+| Realm | Repository | Scope |
+| ----- | ---------- | ----- |
+| `dev.steerspec.core` | [strspc-rules](https://github.com/SteerSpec/strspc-rules) | rule format, entities, lifecycle, configuration |
+| `dev.steerspec.manager` | [strspc-manager](https://github.com/SteerSpec/strspc-manager) | enforcement engine modules and Go conventions |
+| `dev.steerspec.cli` | [strspc-CLI](https://github.com/SteerSpec/strspc-CLI) | commands, configuration, conventions |
+| `dev.steerspec.sync` | [strspc-sync](https://github.com/SteerSpec/strspc-sync) | configuration sync tool and actions (166 rules) |
 
-```
+## Layout
+
+```text
 strspc-spec/
-├── realm.json          # dev.steerspec.platform
-├── _schema/            # Validation schemas (from dev.steerspec.core)
-├── STRSPC.json         # SteerSpec Platform entity
-├── cli/                # dev.steerspec.platform.cli (stub)
-├── manager/            # dev.steerspec.platform.manager (stub)
-├── sync/               # dev.steerspec.platform.sync (166 rules)
-├── cloud/              # dev.steerspec.platform.cloud (stub)
-└── VERSION
+├── rules/
+│   ├── realm.json      # dev.steerspec.platform, depends on dev.steerspec.core@1.6.0
+│   ├── STRSPC.json     # the STRSPC entity
+│   └── _schema/        # schemas from steerspec.dev
+├── CLAUDE.md
+└── LICENSE
 ```
 
-## Sub-Realms
+## Rules
 
-### sync/ -- SteerSpec Sync
+| Rule | Statement |
+| ---- | --------- |
+| STRSPC-001 | Dependencies point downward only: rules → manager → CLI / cloud |
+| STRSPC-002 | Releases land upstream first, each consumer pinning a released version |
+| STRSPC-003 | Every repository owns its rules as a realm on `dev.steerspec.core` |
+| STRSPC-004 | Every repository's CI validates its realm and lifecycle per PR |
+| STRSPC-005 | Published and Implemented rules are never edited, only superseded |
+| STRSPC-006 | Rule logic lives in strspc-manager; CLI and cloud only present its results |
 
-Specification for keeping AI configuration files consistent across a GitHub organization. 166 rules across 16 entities.
+All rules are Draft; promotion follows the SteerSpec lifecycle, one step per pull request.
 
-| File | Entity | Rules | Description |
-|------|--------|-------|-------------|
-| `SYNCMNFST.json` | SYNCMFST | 8 | Central sync configuration |
-| `TMPL.json` | TMPLT + TMPLTVRS | 8 + 5 | Templates and versioned snapshots |
-| `COMPREG.json` | CMPREG + CMPTGT | 5 + 6 | Target repository registry |
-| `SYNCOP.json` | SYNCOP + SYNCPR | 8 + 6 | Sync operations and pull requests |
-| `DEPLST.json` | DPLYST | 5 | Deployment state tracking |
-| `SYNCFG.json` | SYNCCFG | 25 | Configuration schema (steerspec-sync.yml) |
-| `SYNCVER.json` | SYNCVRS | 10 | Versioning strategy |
-| `SYNCACT.json` | SYNCACT | 22 | Sync GitHub Action |
-| `MONACT.json` | MNRACT | 17 | Monitor GitHub Action |
-| `CNFLACT.json` | CNFLACT | 15 | Conflict detection GitHub Action |
-| `CNFL.json` | CNFLRPT + CNFLENT + CNFLDTS | 5 + 13 + 8 | Conflict detection and resolution |
+## Authoring and validation
 
-### cli/ -- SteerSpec CLI
-
-Specification for the command-line tool. Populates as features are built in [strspc-CLI](https://github.com/steerspec/strspc-CLI).
-
-### manager/ -- SteerSpec Manager
-
-Specification for the core enforcement engine. Populates as features are built in [strspc-manager](https://github.com/steerspec/strspc-manager).
-
-### cloud/ -- SteerSpec Cloud
-
-Specification for the SaaS service. Populates as features are built in [strspc-cloud](https://github.com/steerspec/strspc-cloud).
-
-## Dependencies
-
-This realm depends on `dev.steerspec.core` (v0.1.0) for core rule format definitions including RFC-2119 keywords, rule identifiers, entity format, and realm structure.
-
-## Dogfooding
-
-This repo is both the specification and the test bed for SteerSpec tooling:
-
-- **Validate**: `strspc realm validate` checks realm structure and entity schemas
-- **Render**: `strspc render sync/SYNCMNFST.json` renders entities to readable markdown
-- **Lint**: `strspc lint sync/` validates entity files against schemas (coming soon)
-
-As new features land in `-CLI` and `-manager`, they are specified here first and then validated by the very tools being built.
-
-## Version
-
-Current specification version: `0.1.0-draft`
+Entity files are edited through the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI)
+(`strspc rule add`, `strspc rule promote`, `strspc note add`) and validated in CI with
+`strspc realm validate`, `strspc lint` and `strspc diff` via the org reusable workflow in
+[SteerSpec/.github](https://github.com/SteerSpec/.github).
 
 ## License
 
-This specification is open source. See [LICENSE](LICENSE) for details.
+Apache 2.0, see [LICENSE](LICENSE).
