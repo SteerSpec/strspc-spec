@@ -6,9 +6,9 @@
     "description": "The SteerSpec platform: the rule format (strspc-rules), the enforcement engine (strspc-manager), the CLI, the configuration sync tool and the planned cloud service. Rules here are cross-cutting; each component owns its own realm."
   },
   "rule_set": {
-    "version": "0.1.6",
-    "timestamp": "2026-10-19T19:55:51Z",
-    "hash": "blake3:2988b4a2cf4571b42abb6dfa7ad386420953e8038e4bae9c44ab478dae23d389"
+    "version": "0.1.7",
+    "timestamp": "2026-10-19T19:56:09Z",
+    "hash": "blake3:cb48b1b59e8e7fc63340c138b3dfc02b38b07abec00c14d9ff2ebe7214c3cc75"
   },
   "rules": [
     {
@@ -31,7 +31,7 @@
     },
     {
       "id": "STRSPC-003",
-      "revision": 0,
+      "revision": 1,
       "state": "D",
       "body": "Every SteerSpec repository MUST own its rules as a SteerSpec realm in that repository, and every realm other than dev.steerspec.core MUST depend on dev.steerspec.core at a released version.",
       "added_by": "@pleberre",
