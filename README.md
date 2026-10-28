@@ -23,7 +23,7 @@ Component specifications live with their code:
 ```text
 strspc-spec/
 ├── rules/
-│   ├── realm.json      # dev.steerspec.platform, depends on dev.steerspec.core@1.9.0
+│   ├── realm.json      # dev.steerspec.platform, depends on dev.steerspec.core@1.10.0
 │   ├── STRSPC.json     # the STRSPC entity
 │   └── _schema/        # schemas from steerspec.dev
 ├── CLAUDE.md
