@@ -18,7 +18,7 @@ permissions:
   contents: read
 
 jobs:
-  validate:
+  rules:
     uses: SteerSpec/.github/.github/workflows/strspc-lint.yml@main
     permissions:
       contents: read
