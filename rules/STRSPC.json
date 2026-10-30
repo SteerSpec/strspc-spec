@@ -6,9 +6,9 @@
     "description": "The SteerSpec platform: the rule format (strspc-rules), the enforcement engine (strspc-manager), the CLI, the configuration sync tool and the planned cloud service. Rules here are cross-cutting; each component owns its own realm."
   },
   "rule_set": {
-    "version": "0.5.0",
-    "timestamp": "2026-10-30T17:08:26Z",
-    "hash": "blake3:7735f09dd1d2f6f5e7bc5108df0658e051f07930dfdc43f8460329f608ea8c89"
+    "version": "0.6.0",
+    "timestamp": "2026-10-30T17:17:03Z",
+    "hash": "blake3:565b1074b695a20dad350490ef9f2772871a1c3af8321ff0b89ba7c4879bd126"
   },
   "rules": [
     {
@@ -50,7 +50,7 @@
     {
       "id": "STRSPC-005",
       "revision": 0,
-      "state": "P",
+      "state": "I",
       "body": "A Published or Implemented rule MUST NOT be edited; a change MUST be expressed as a new rule that supersedes it.",
       "added_by": "@pleberre",
       "added_at": "2026-10-19",
