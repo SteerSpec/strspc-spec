@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.0](https://github.com/SteerSpec/strspc-spec/compare/v0.2.0...v1.0.0) (2026-10-30)
+
+
+### Features
+
+* **release:** start the spec at 1.0.0 ([#28](https://github.com/SteerSpec/strspc-spec/issues/28)) ([d9271ba](https://github.com/SteerSpec/strspc-spec/commit/d9271ba8e2908a26b52883e5ad16d240623f3f9d))
+
 ## [0.2.0](https://github.com/SteerSpec/strspc-spec/compare/v0.1.0...v0.2.0) (2026-10-30)
 
 
