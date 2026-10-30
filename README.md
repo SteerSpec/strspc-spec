@@ -26,6 +26,8 @@ strspc-spec/
 │   ├── realm.json      # dev.steerspec.platform, depends on dev.steerspec.core@1.11.0
 │   ├── STRSPC.json     # the STRSPC entity
 │   └── _schema/        # schemas from steerspec.dev
+├── .strspc/
+│   └── config.yaml     # strspc check configuration
 ├── CLAUDE.md
 └── LICENSE
 ```
@@ -47,8 +49,8 @@ All rules are Draft; promotion follows the SteerSpec lifecycle, one step per pul
 
 Entity files are edited through the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI)
 (`strspc rule add`, `strspc rule promote`, `strspc note add`) and validated in CI with
-`strspc realm validate`, `strspc lint` and `strspc diff` via the org reusable workflow in
-[SteerSpec/.github](https://github.com/SteerSpec/.github).
+`strspc realm validate`, `strspc lint`, `strspc diff` and `strspc check` via the org reusable
+workflows in [SteerSpec/.github](https://github.com/SteerSpec/.github).
 
 ## License
 
