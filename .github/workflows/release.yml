@@ -9,19 +9,21 @@ on:
     branches: [main]
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: release
   cancel-in-progress: false
 
 jobs:
-  release:
+  # A job of its own: the CLI tracks the latest release, so it runs without the
+  # write token the release job holds.
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
         with:
-          fetch-depth: 0
+          persist-credentials: false
 
       - uses: SteerSpec/strspc-CLI/.github/actions/setup-strspc@1ce43e4484d9451083c0774a9926178889d684f2  # CLI #92
         with:
@@ -29,6 +31,16 @@ jobs:
 
       - name: Validate realm and entity files
         run: strspc realm validate rules/ --recursive --strict
+
+  release:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       # If the tag already exists on another commit (docs-only or promotion
       # merges), skip the release instead of failing. If it exists on this
