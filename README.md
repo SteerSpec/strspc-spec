@@ -77,7 +77,7 @@ Each component's rules live with its code:
 ```text
 strspc-spec/
 ├── rules/
-│   ├── realm.json      # dev.steerspec.platform, depends on dev.steerspec.core@1.11.0
+│   ├── realm.json      # dev.steerspec.platform, depends on dev.steerspec.core@1.12.0
 │   ├── STRSPC.json     # the STRSPC entity
 │   └── _schema/        # schemas from steerspec.dev
 ├── .strspc/
