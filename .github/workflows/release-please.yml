@@ -1,0 +1,37 @@
+name: Release Please
+
+# Keeps a release PR open against main that sets realm.version and the changelog
+# from the conventional commits promoted to main. Merging it creates the vX.Y.Z
+# tag and GitHub release, and the tag push runs release.yml.
+
+on:
+  push:
+    branches: [main]
+
+# The App token does the work; GITHUB_TOKEN needs nothing.
+permissions: {}
+
+jobs:
+  release-please:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mint a GitHub App token
+        # steerspec-sync App: its PRs trigger CI (unlike GITHUB_TOKEN) and its API
+        # commits are GitHub-signed (required_signatures).
+        id: app
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510  # v3.3.0
+        with:
+          app-id: ${{ secrets.STEERSPEC_APP_ID }}
+          private-key: ${{ secrets.STEERSPEC_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7  # v5.0.0
+        with:
+          # Not GITHUB_TOKEN: its tag pushes would not trigger release.yml and its
+          # PRs get no CI. Not a PAT either: PAT commits are unsigned.
+          token: ${{ steps.app.outputs.token }}
+          # Default branch is develop; pin releases to main (promotion target).
+          target-branch: main
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
