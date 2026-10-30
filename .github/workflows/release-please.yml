@@ -19,6 +19,7 @@ jobs:
     outputs:
       release_created: ${{ steps.release.outputs.release_created }}
       tag_name: ${{ steps.release.outputs.tag_name }}
+      sha: ${{ steps.release.outputs.sha }}
     steps:
       - name: Mint a GitHub App token
         # steerspec-sync App: its PRs trigger CI (unlike GITHUB_TOKEN) and its API
@@ -53,7 +54,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ needs.release-please.outputs.tag_name }}
+          ref: ${{ needs.release-please.outputs.sha }}
           persist-credentials: false
 
       - name: realm.version matches tag
@@ -81,7 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@v7
         with:
-          ref: ${{ needs.release-please.outputs.tag_name }}
+          ref: ${{ needs.release-please.outputs.sha }}
           persist-credentials: false
 
       - name: Package rules
