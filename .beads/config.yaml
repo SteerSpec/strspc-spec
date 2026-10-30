@@ -73,3 +73,6 @@
 
 sync:
     remote: "git+https://github.com/SteerSpec/strspc-spec.git"
+export:
+    auto: true
+    path: issues.jsonl
