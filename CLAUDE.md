@@ -26,7 +26,7 @@ strspc rule promote STRSPC-001 --dir rules
 strspc note add ...
 strspc realm validate rules --recursive --strict
 strspc lint rules --strict
-strspc diff rules --base origin/main
+strspc diff rules --base origin/develop
 ```
 
 Rules start Draft (`D`) and move D → P → I one step per pull request; Published and Implemented
@@ -39,6 +39,14 @@ which installs the released CLI and runs realm validation, entity lint and the l
 It also calls `strspc-check`, which resolves the realm's dependencies and verifies cross-realm
 references using `.strspc/config.yaml` (provider null, so no AI evaluation).
 Commits use Conventional Commits.
+
+## Branching and releases
+
+`develop` is the default branch. Feature branches go to `develop` by PR; `develop` → `main` by PR
+(merge commit) is a release. `.github/workflows/release.yml` then tags `v<realm.version>` and
+publishes a GitHub release, and skips when that tag exists, so bump `realm.version` in
+`rules/realm.json` before a release PR. CI exempts release PRs and pushes to `main` from the
+lifecycle diff: they aggregate steps already validated on the way into `develop`.
 
 <!-- STEERSPEC:BEGIN:org-standards -->
 ## SteerSpec org standards
