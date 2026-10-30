@@ -57,7 +57,8 @@ consumers.
 These are summaries; [`rules/STRSPC.json`](rules/STRSPC.json) holds the normative text.
 
 > [!NOTE]
-> All six rules are Draft. CI fails only on Implemented rules, so none of them is enforced yet.
+> STRSPC-001, 002, 005 and 006 are Published; 003 and 004 are Draft. CI fails only on Implemented
+> rules, so none of them is enforced yet.
 
 ## Where rules live
 
