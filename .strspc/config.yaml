@@ -1,0 +1,17 @@
+# SteerSpec configuration for strspc-spec.
+# This repo has no code to evaluate: the check resolves the realm in rules/
+# and its pinned dependencies, the only place cross-realm references such as
+# `inherits` and `overrides` are verified. Schema:
+# https://steerspec.dev/schemas/config/v1.json
+rules:
+  - source: ./rules/
+    scope: global
+
+evaluator:
+  provider: null  # no AI evaluation; structural checks only
+
+cache:
+  ttl: 24h
+
+fail_on:
+  - I

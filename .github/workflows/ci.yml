@@ -5,7 +5,8 @@ name: CI
 # check runs, deliberately, so an approval always rests on evidence.
 #
 # The evidence is the realm validating with the released CLI: realm structure,
-# entity schemas, lifecycle transitions.
+# entity schemas, lifecycle transitions. The check job adds what those offline
+# steps cannot see: the realm's dependencies and cross-realm references.
 
 on:
   push:
@@ -24,3 +25,9 @@ jobs:
       pull-requests: read
     with:
       path: rules/
+
+  check:
+    uses: SteerSpec/.github/.github/workflows/strspc-check.yml@main
+    permissions:
+      contents: read
+      pull-requests: read
