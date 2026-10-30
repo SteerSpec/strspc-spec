@@ -13,6 +13,8 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
+    # edited: the title is checked below, and it can change right before a squash.
+    types: [opened, edited, synchronize, reopened]
 
 permissions:
   contents: read
@@ -58,3 +60,11 @@ jobs:
       - uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50  # v6.1.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Title length
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          if [ "${#TITLE}" -gt 120 ]; then
+            echo "::error::PR title is ${#TITLE} characters, the limit is 120"
+            exit 1
+          fi
