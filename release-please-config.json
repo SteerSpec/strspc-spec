@@ -17,8 +17,7 @@
         { "type": "chore", "section": "Miscellaneous", "hidden": true },
         { "type": "ci", "section": "CI", "hidden": true },
         { "type": "test", "section": "Tests", "hidden": true }
-      ],
-      "bump-minor-pre-major": true
+      ]
     }
   }
 }

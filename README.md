@@ -119,20 +119,21 @@ and `overrides`.
 `develop` is the default branch and collects the changes for the next release; `main` only moves
 when a release is prepared:
 
-1. Pull requests target `develop`.
+1. Pull requests target `develop` and are squashed, so the title becomes the commit release-please
+   reads.
 2. A `chore: promote develop to main` pull request carries the bundle to `main`. Merge it with a
    **merge commit**: release-please reads the individual commits, and a squash would hide them.
 3. [release-please](https://github.com/googleapis/release-please) opens a release pull request
    against `main` that sets `realm.version` and updates `CHANGELOG.md`.
 4. Merging it tags `v<realm.version>` and publishes a GitHub release with the rules as archives.
 
-Commit types set the version, so rule changes need the right one:
+Title types set the version, so rule changes need the right one:
 
-| Change | Commit | Version |
-| ------ | ------ | ------- |
+| Change | Title | Version |
+| ------ | ----- | ------- |
 | Add or promote a rule | `feat(rules): ...` | minor |
 | Correct a Draft rule | `fix(rules): ...` | patch |
-| Breaking change | `feat(rules)!: ...` | minor until 1.0.0, then major |
+| Breaking change | `feat(rules)!: ...` | major |
 | Docs, CI, chores, core pins | `docs:`, `ci:`, `chore:` | no release |
 
 `main` holds the released `realm.version`. `develop` is not back-merged, so its copy stays behind.
@@ -164,7 +165,7 @@ flowchart LR
 
 | Topic | Convention |
 | ----- | ---------- |
-| **Commits** | [Conventional Commits](https://www.conventionalcommits.org/), as `type(scope): subject`, checked in CI |
+| **Commits** | [Conventional Commits](https://www.conventionalcommits.org/), as `type(scope): subject`. CI checks pull request titles |
 | **Versions** | `realm.version` in `rules/realm.json` is the specification version, in [SemVer](https://semver.org/) form. release-please sets it, and `v<realm.version>` is the release tag |
 | **Dependencies** | The core realm is pinned to one exact released version |
 
