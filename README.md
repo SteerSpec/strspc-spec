@@ -1,9 +1,16 @@
+<div align="center">
+
 # SteerSpec Platform
 
-> The rules that span every SteerSpec repository, written as a SteerSpec realm.
+**The rules that span every SteerSpec repository, written as a SteerSpec realm.**
 
 [![CI](https://github.com/SteerSpec/strspc-spec/actions/workflows/ci.yml/badge.svg)](https://github.com/SteerSpec/strspc-spec/actions/workflows/ci.yml)
+[![Realm version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSteerSpec%2Fstrspc-spec%2Fmain%2Frules%2Frealm.json&query=%24.realm.version&label=realm&color=4c1)](rules/realm.json)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+
+[Architecture](#architecture) · [Rules](#rules) · [Where rules live](#where-rules-live) · [Working with the rules](#working-with-the-rules) · [Conventions](#conventions)
+
+</div>
 
 [SteerSpec](https://steerspec.dev) manages behavioral rules as structured JSON with deterministic
 enforcement. This repository is the `dev.steerspec.platform` realm. It covers what no single
@@ -14,14 +21,23 @@ logic lives.
 
 ```mermaid
 flowchart LR
-    R["strspc-rules<br/><i>rule format and schemas</i>"]
-    M["strspc-manager<br/><i>enforcement engine</i>"]
-    C["strspc-CLI<br/><i>command line</i>"]
-    K["strspc-cloud<br/><i>hosted service, planned</i>"]
+    subgraph platform["Governed by dev.steerspec.platform"]
+        direction LR
+        R["<b>strspc-rules</b><br/>rule format and schemas"]
+        M["<b>strspc-manager</b><br/>enforcement engine"]
+        C["<b>strspc-CLI</b><br/>command line"]
+        K["<b>strspc-cloud</b><br/>hosted service, planned"]
 
-    R -->|consumed by| M
-    M -->|imported by| C
-    M -->|imported by| K
+        R -->|consumed by| M
+        M -->|imported by| C
+        M -.->|imported by| K
+    end
+
+    classDef shipped fill:#1f6feb,stroke:#1f6feb,color:#ffffff
+    classDef planned fill:#6e7781,stroke:#6e7781,color:#ffffff
+    class R,M,C shipped
+    class K planned
+    style platform fill:transparent,stroke:#6e7781,stroke-dasharray:5 5
 ```
 
 Dependencies point one way, and releases land in the same order: rules, then manager, then its
@@ -29,18 +45,19 @@ consumers.
 
 ## Rules
 
-| Rule | Statement |
-| ---- | --------- |
-| STRSPC-001 | Dependencies point downward only: rules → manager → CLI / cloud |
-| STRSPC-002 | Releases land upstream first, each consumer pinning a released version |
-| STRSPC-003 | Every repository owns a realm; non-core realms depend on core |
-| STRSPC-004 | Every repository's CI validates its realm and lifecycle per PR |
-| STRSPC-005 | Published and Implemented rules are never edited, only superseded |
-| STRSPC-006 | Rule logic lives in strspc-manager; CLI and cloud only present its results |
+| ID | Topic | Rule |
+| -- | ----- | ---- |
+| STRSPC-001 | **Tier direction** | Dependencies point downward only: rules → manager → CLI / cloud |
+| STRSPC-002 | **Release order** | Releases land upstream first, each consumer pinning a released version |
+| STRSPC-003 | **Realm ownership** | Every repository owns a realm; non-core realms depend on core |
+| STRSPC-004 | **CI validation** | Every repository's CI validates its realm and lifecycle per PR |
+| STRSPC-005 | **Rule immutability** | Published and Implemented rules are never edited, only superseded |
+| STRSPC-006 | **Logic placement** | Rule logic lives in strspc-manager; CLI and cloud only present its results |
 
 These are summaries; [`rules/STRSPC.json`](rules/STRSPC.json) holds the normative text.
 
-All six rules are Draft. CI fails only on Implemented rules, so none of them is enforced yet.
+> [!NOTE]
+> All six rules are Draft. CI fails only on Implemented rules, so none of them is enforced yet.
 
 ## Where rules live
 
@@ -70,12 +87,15 @@ strspc-spec/
 
 ## Working with the rules
 
-Install the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI), then edit entity files only
-through it, so versions and hashes stay consistent:
+Install the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI):
 
 ```bash
 brew install --cask SteerSpec/tap/strspc
+```
 
+Edit entity files only through it, so versions and hashes stay consistent:
+
+```bash
 strspc rule add STRSPC --dir rules --body "..." --added-by @you
 strspc rule promote STRSPC-001 --dir rules
 ```
@@ -96,13 +116,31 @@ and `overrides`.
 
 ## Conventions
 
-- **Rule lifecycle:** rules move Draft → Published → Implemented, one step per pull request.
-  Published and Implemented rules are never edited, they are superseded.
-- **Commits:** [Conventional Commits](https://www.conventionalcommits.org/), as
-  `type(scope): subject`.
-- **Versions:** `realm.version` in `rules/realm.json` is the specification version, in
-  [SemVer](https://semver.org/) `MAJOR.MINOR.PATCH` form. This repository has no tags or releases.
-- **Dependencies:** the core realm is pinned to one exact released version.
+Rules move one state per pull request. Published and Implemented rules are never edited, they are
+superseded.
+
+```mermaid
+flowchart LR
+    D["<b>Draft</b><br/>text may change"]
+    P["<b>Published</b><br/>text is final"]
+    I["<b>Implemented</b><br/>enforced in CI"]
+
+    D -->|one PR| P
+    P -->|one PR| I
+
+    classDef draft fill:#6e7781,stroke:#6e7781,color:#ffffff
+    classDef published fill:#1f6feb,stroke:#1f6feb,color:#ffffff
+    classDef implemented fill:#1a7f37,stroke:#1a7f37,color:#ffffff
+    class D draft
+    class P published
+    class I implemented
+```
+
+| Topic | Convention |
+| ----- | ---------- |
+| **Commits** | [Conventional Commits](https://www.conventionalcommits.org/), as `type(scope): subject` |
+| **Versions** | `realm.version` in `rules/realm.json` is the specification version, in [SemVer](https://semver.org/) `MAJOR.MINOR.PATCH` form. This repository has no tags or releases. |
+| **Dependencies** | The core realm is pinned to one exact released version |
 
 ## Contributing
 
