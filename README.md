@@ -8,7 +8,7 @@
 [![Realm version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSteerSpec%2Fstrspc-spec%2Fmain%2Frules%2Frealm.json&query=%24.realm.version&label=realm&color=4c1)](rules/realm.json)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-[Architecture](#architecture) · [Rules](#rules) · [Where rules live](#where-rules-live) · [Working with the rules](#working-with-the-rules) · [Conventions](#conventions)
+[Architecture](#architecture) · [Rules](#rules) · [Where rules live](#where-rules-live) · [Working with the rules](#working-with-the-rules) · [Releases](#branching-and-releases) · [Conventions](#conventions)
 
 </div>
 
@@ -105,7 +105,7 @@ Run the same validation as CI before opening a pull request:
 ```bash
 strspc realm validate rules --recursive --strict
 strspc lint rules --strict
-strspc diff rules --base origin/main
+strspc diff rules --base origin/develop
 strspc check --static-only
 ```
 
@@ -113,6 +113,32 @@ CI runs these through the reusable workflows in
 [SteerSpec/.github](https://github.com/SteerSpec/.github). `strspc realm validate` compares the realm
 with its pinned dependencies; only `strspc check` verifies cross-realm references such as `inherits`
 and `overrides`.
+
+## Branching and releases
+
+`develop` is the default branch and collects the changes for the next release; `main` only moves
+when a release is prepared:
+
+1. Pull requests target `develop`.
+2. A `chore: promote develop to main` pull request carries the bundle to `main`. Merge it with a
+   **merge commit**: release-please reads the individual commits, and a squash would hide them.
+3. [release-please](https://github.com/googleapis/release-please) opens a release pull request
+   against `main` that sets `realm.version` and updates `CHANGELOG.md`.
+4. Merging it tags `v<realm.version>` and publishes a GitHub release with the rules as archives.
+
+Commit types set the version, so rule changes need the right one:
+
+| Change | Commit | Version |
+| ------ | ------ | ------- |
+| Add or promote a rule | `feat(rules): ...` | minor |
+| Correct a Draft rule | `fix(rules): ...` | patch |
+| Breaking change | `feat(rules)!: ...` | minor until 1.0.0, then major |
+| Docs, CI, chores, core pins | `docs:`, `ci:`, `chore:` | no release |
+
+`main` holds the released `realm.version`. `develop` is not back-merged, so its copy stays behind.
+
+Release pull requests skip the `strspc diff` lifecycle check: they aggregate transitions that were
+validated one pull request at a time on the way into `develop`.
 
 ## Conventions
 
@@ -138,8 +164,8 @@ flowchart LR
 
 | Topic | Convention |
 | ----- | ---------- |
-| **Commits** | [Conventional Commits](https://www.conventionalcommits.org/), as `type(scope): subject` |
-| **Versions** | `realm.version` in `rules/realm.json` is the specification version, in [SemVer](https://semver.org/) `MAJOR.MINOR.PATCH` form. This repository has no tags or releases. |
+| **Commits** | [Conventional Commits](https://www.conventionalcommits.org/), as `type(scope): subject`, checked in CI |
+| **Versions** | `realm.version` in `rules/realm.json` is the specification version, in [SemVer](https://semver.org/) form. release-please sets it, and `v<realm.version>` is the release tag |
 | **Dependencies** | The core realm is pinned to one exact released version |
 
 ## Contributing

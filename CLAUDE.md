@@ -26,7 +26,7 @@ strspc rule promote STRSPC-001 --dir rules
 strspc note add ...
 strspc realm validate rules --recursive --strict
 strspc lint rules --strict
-strspc diff rules --base origin/main
+strspc diff rules --base origin/develop
 ```
 
 Rules start Draft (`D`) and move D → P → I one step per pull request; Published and Implemented
@@ -40,7 +40,19 @@ It also calls `strspc-check`, which resolves the realm's dependencies and verifi
 references using `.strspc/config.yaml` (provider null, so no AI evaluation).
 Commits use Conventional Commits.
 
-<!-- STEERSPEC:BEGIN:org-standards -->
+## Branching and releases
+
+`develop` is the default branch. Feature branches go to `develop` by PR. A
+`chore: promote develop to main` PR, merged with a merge commit, carries the bundle to `main`.
+release-please then opens a release PR that sets `realm.version` and `CHANGELOG.md`; merging it
+tags and publishes, and `.github/workflows/release-please.yml` attaches the rules as archives.
+
+Never bump `realm.version` by hand. Commit types set it: `feat(rules):` for adding or promoting a
+rule (minor), `fix(rules):` for correcting a Draft rule (patch), `feat(rules)!:` for a breaking
+change. `docs:`, `ci:` and `chore:` do not release. CI lints commits with commitlint, and exempts
+release PRs and pushes to `main` from the lifecycle diff: they aggregate steps already validated on
+the way into `develop`.
+
 ## SteerSpec org standards
 
 Managed by [SteerSpec/.claude](https://github.com/SteerSpec/.claude) through
