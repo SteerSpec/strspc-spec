@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.1.0](https://github.com/SteerSpec/strspc-spec/compare/v1.0.0...v1.1.0) (2026-10-30)
+
+
+### Features
+
+* **rules:** promote STRSPC-001, 002, 005 and 006 to Published ([f5e762a](https://github.com/SteerSpec/strspc-spec/commit/f5e762a5696ea22d32b40d5968c42c047b390092))
+* **rules:** promote STRSPC-001, 002, 005 and 006 to Published ([aba70bb](https://github.com/SteerSpec/strspc-spec/commit/aba70bb876197d1113ce2b4a42c174184bcef699))
+* **rules:** promote STRSPC-005 to Implemented ([5927548](https://github.com/SteerSpec/strspc-spec/commit/592754891e0303a0bab50d15cabc50d88dbe28e6))
+* **rules:** promote STRSPC-005 to Implemented ([7011c47](https://github.com/SteerSpec/strspc-spec/commit/7011c4758e2a2c448bcc5f18e996c12573798d09))
+
 ## [1.0.0](https://github.com/SteerSpec/strspc-spec/compare/v0.2.0...v1.0.0) (2026-10-30)
 
 
