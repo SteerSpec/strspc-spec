@@ -1,22 +1,75 @@
+<div align="center">
+
 # SteerSpec Platform
 
-**The cross-cutting specification of the SteerSpec platform, written as a SteerSpec realm.**
+**The rules that span every SteerSpec repository, written as a SteerSpec realm.**
 
-## Overview
+[![CI](https://github.com/SteerSpec/strspc-spec/actions/workflows/ci.yml/badge.svg)](https://github.com/SteerSpec/strspc-spec/actions/workflows/ci.yml)
+[![Realm version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSteerSpec%2Fstrspc-spec%2Fmain%2Frules%2Frealm.json&query=%24.realm.version&label=realm&color=4c1)](rules/realm.json)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-This repository is the `dev.steerspec.platform` realm. It holds the rules that span the whole
-platform: how the tiers depend on each other, in which order they release, that every component
-owns its rules as a realm and validates them in CI, that published rules are immutable, and where
-rule logic lives.
+[Architecture](#architecture) · [Rules](#rules) · [Where rules live](#where-rules-live) · [Working with the rules](#working-with-the-rules) · [Conventions](#conventions)
 
-Component specifications live with their code:
+</div>
+
+[SteerSpec](https://steerspec.dev) manages behavioral rules as structured JSON with deterministic
+enforcement. This repository is the `dev.steerspec.platform` realm. It covers what no single
+component can own: how the tiers depend on each other, the order they release in, and where rule
+logic lives.
+
+## Architecture
+
+```mermaid
+flowchart LR
+    subgraph platform["Governed by dev.steerspec.platform"]
+        direction LR
+        R["<b>strspc-rules</b><br/>rule format and schemas"]
+        M["<b>strspc-manager</b><br/>enforcement engine"]
+        C["<b>strspc-CLI</b><br/>command line"]
+        K["<b>strspc-cloud</b><br/>hosted service, planned"]
+
+        R -->|consumed by| M
+        M -->|imported by| C
+        M -.->|imported by| K
+    end
+
+    classDef shipped fill:#1f6feb,stroke:#1f6feb,color:#ffffff
+    classDef planned fill:#6e7781,stroke:#6e7781,color:#ffffff
+    class R,M,C shipped
+    class K planned
+    style platform fill:transparent,stroke:#6e7781,stroke-dasharray:5 5
+```
+
+Dependencies point one way, and releases land in the same order: rules, then manager, then its
+consumers.
+
+## Rules
+
+| ID | Topic | Rule |
+| -- | ----- | ---- |
+| STRSPC-001 | **Tier direction** | Dependencies point downward only: rules → manager → CLI / cloud |
+| STRSPC-002 | **Release order** | Releases land upstream first, each consumer pinning a released version |
+| STRSPC-003 | **Realm ownership** | Every repository owns a realm; non-core realms depend on core |
+| STRSPC-004 | **CI validation** | Every repository's CI validates its realm and lifecycle per PR |
+| STRSPC-005 | **Rule immutability** | Published and Implemented rules are never edited, only superseded |
+| STRSPC-006 | **Logic placement** | Rule logic lives in strspc-manager; CLI and cloud only present its results |
+
+These are summaries; [`rules/STRSPC.json`](rules/STRSPC.json) holds the normative text.
+
+> [!NOTE]
+> All six rules are Draft. CI fails only on Implemented rules, so none of them is enforced yet.
+
+## Where rules live
+
+Each component's rules live with its code:
 
 | Realm | Repository | Scope |
 | ----- | ---------- | ----- |
+| `dev.steerspec.platform` | this repository | cross-cutting platform rules |
 | `dev.steerspec.core` | [strspc-rules](https://github.com/SteerSpec/strspc-rules) | rule format, entities, lifecycle, configuration |
 | `dev.steerspec.manager` | [strspc-manager](https://github.com/SteerSpec/strspc-manager) | enforcement engine modules and Go conventions |
 | `dev.steerspec.cli` | [strspc-CLI](https://github.com/SteerSpec/strspc-CLI) | commands, configuration, conventions |
-| `dev.steerspec.sync` | [strspc-sync](https://github.com/SteerSpec/strspc-sync) | configuration sync tool and actions (166 rules) |
+| `dev.steerspec.sync` | [strspc-sync](https://github.com/SteerSpec/strspc-sync) | configuration sync tool and actions |
 
 ## Layout
 
@@ -32,25 +85,66 @@ strspc-spec/
 └── LICENSE
 ```
 
-## Rules
+## Working with the rules
 
-| Rule | Statement |
-| ---- | --------- |
-| STRSPC-001 | Dependencies point downward only: rules → manager → CLI / cloud |
-| STRSPC-002 | Releases land upstream first, each consumer pinning a released version |
-| STRSPC-003 | Every repository owns a realm; non-core realms depend on core |
-| STRSPC-004 | Every repository's CI validates its realm and lifecycle per PR |
-| STRSPC-005 | Published and Implemented rules are never edited, only superseded |
-| STRSPC-006 | Rule logic lives in strspc-manager; CLI and cloud only present its results |
+Install the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI):
 
-All rules are Draft; promotion follows the SteerSpec lifecycle, one step per pull request.
+```bash
+brew install --cask SteerSpec/tap/strspc
+```
 
-## Authoring and validation
+Edit entity files only through it, so versions and hashes stay consistent:
 
-Entity files are edited through the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI)
-(`strspc rule add`, `strspc rule promote`, `strspc note add`) and validated in CI with
-`strspc realm validate`, `strspc lint`, `strspc diff` and `strspc check` via the org reusable
-workflows in [SteerSpec/.github](https://github.com/SteerSpec/.github).
+```bash
+strspc rule add STRSPC --dir rules --body "..." --added-by @you
+strspc rule promote STRSPC-001 --dir rules
+```
+
+Run the same validation as CI before opening a pull request:
+
+```bash
+strspc realm validate rules --recursive --strict
+strspc lint rules --strict
+strspc diff rules --base origin/main
+strspc check --static-only
+```
+
+CI runs these through the reusable workflows in
+[SteerSpec/.github](https://github.com/SteerSpec/.github). `strspc realm validate` compares the realm
+with its pinned dependencies; only `strspc check` verifies cross-realm references such as `inherits`
+and `overrides`.
+
+## Conventions
+
+Rules move one state per pull request. Published and Implemented rules are never edited, they are
+superseded.
+
+```mermaid
+flowchart LR
+    D["<b>Draft</b><br/>text may change"]
+    P["<b>Published</b><br/>text is final"]
+    I["<b>Implemented</b><br/>enforced in CI"]
+
+    D -->|one PR| P
+    P -->|one PR| I
+
+    classDef draft fill:#6e7781,stroke:#6e7781,color:#ffffff
+    classDef published fill:#1f6feb,stroke:#1f6feb,color:#ffffff
+    classDef implemented fill:#1a7f37,stroke:#1a7f37,color:#ffffff
+    class D draft
+    class P published
+    class I implemented
+```
+
+| Topic | Convention |
+| ----- | ---------- |
+| **Commits** | [Conventional Commits](https://www.conventionalcommits.org/), as `type(scope): subject` |
+| **Versions** | `realm.version` in `rules/realm.json` is the specification version, in [SemVer](https://semver.org/) `MAJOR.MINOR.PATCH` form. This repository has no tags or releases. |
+| **Dependencies** | The core realm is pinned to one exact released version |
+
+## Contributing
+
+See the [SteerSpec contributing guide](https://github.com/SteerSpec/.github/blob/main/CONTRIBUTING.md).
 
 ## License
 
