@@ -133,7 +133,7 @@ Title types set the version, so rule changes need the right one:
 | ------ | ----- | ------- |
 | Add or promote a rule | `feat(rules): ...` | minor |
 | Correct a Draft rule | `fix(rules): ...` | patch |
-| Breaking change | `feat(rules)!: ...` | minor until 1.0.0, then major |
+| Breaking change | `feat(rules)!: ...` | major |
 | Docs, CI, chores, core pins | `docs:`, `ci:`, `chore:` | no release |
 
 `main` holds the released `realm.version`. `develop` is not back-merged, so its copy stays behind.
