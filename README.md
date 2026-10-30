@@ -120,10 +120,22 @@ and `overrides`.
 when a release is prepared:
 
 1. Pull requests target `develop`.
-2. To release, bump `realm.version` in `rules/realm.json`, then open a `develop` → `main` pull
-   request and merge it with a merge commit.
-3. The release workflow tags `v<realm.version>` and publishes a GitHub release with the rules as
-   archives. If the tag already exists the release is skipped.
+2. A `chore: promote develop to main` pull request carries the bundle to `main`. Merge it with a
+   **merge commit**: release-please reads the individual commits, and a squash would hide them.
+3. [release-please](https://github.com/googleapis/release-please) opens a release pull request
+   against `main` that sets `realm.version` and updates `CHANGELOG.md`.
+4. Merging it tags `v<realm.version>` and publishes a GitHub release with the rules as archives.
+
+Commit types set the version, so rule changes need the right one:
+
+| Change | Commit | Version |
+| ------ | ------ | ------- |
+| Add or promote a rule | `feat(rules): ...` | minor |
+| Correct a Draft rule | `fix(rules): ...` | patch |
+| Breaking change | `feat(rules)!: ...` | minor until 1.0.0, then major |
+| Docs, CI, chores, core pins | `docs:`, `ci:`, `chore:` | no release |
+
+`main` holds the released `realm.version`. `develop` is not back-merged, so its copy stays behind.
 
 Release pull requests skip the `strspc diff` lifecycle check: they aggregate transitions that were
 validated one pull request at a time on the way into `develop`.
@@ -152,8 +164,8 @@ flowchart LR
 
 | Topic | Convention |
 | ----- | ---------- |
-| **Commits** | [Conventional Commits](https://www.conventionalcommits.org/), as `type(scope): subject` |
-| **Versions** | `realm.version` in `rules/realm.json` is the specification version, in [SemVer](https://semver.org/) `MAJOR.MINOR.PATCH` form, and `v<realm.version>` is the release tag |
+| **Commits** | [Conventional Commits](https://www.conventionalcommits.org/), as `type(scope): subject`, checked in CI |
+| **Versions** | `realm.version` in `rules/realm.json` is the specification version, in [SemVer](https://semver.org/) form. release-please sets it, and `v<realm.version>` is the release tag |
 | **Dependencies** | The core realm is pinned to one exact released version |
 
 ## Contributing

@@ -42,13 +42,17 @@ Commits use Conventional Commits.
 
 ## Branching and releases
 
-`develop` is the default branch. Feature branches go to `develop` by PR; `develop` → `main` by PR
-(merge commit) is a release. `.github/workflows/release.yml` then tags `v<realm.version>` and
-publishes a GitHub release, and skips when that tag exists, so bump `realm.version` in
-`rules/realm.json` before a release PR. CI exempts release PRs and pushes to `main` from the
-lifecycle diff: they aggregate steps already validated on the way into `develop`.
+`develop` is the default branch. Feature branches go to `develop` by PR. A
+`chore: promote develop to main` PR, merged with a merge commit, carries the bundle to `main`.
+release-please then opens a release PR that sets `realm.version` and `CHANGELOG.md`; merging it
+tags and publishes, and `.github/workflows/release-please.yml` attaches the rules as archives.
 
-<!-- STEERSPEC:BEGIN:org-standards -->
+Never bump `realm.version` by hand. Commit types set it: `feat(rules):` for adding or promoting a
+rule (minor), `fix(rules):` for correcting a Draft rule (patch), `feat(rules)!:` for a breaking
+change. `docs:`, `ci:` and `chore:` do not release. CI lints commits with commitlint, and exempts
+release PRs and pushes to `main` from the lifecycle diff: they aggregate steps already validated on
+the way into `develop`.
+
 ## SteerSpec org standards
 
 Managed by [SteerSpec/.claude](https://github.com/SteerSpec/.claude) through

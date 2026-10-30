@@ -46,3 +46,16 @@ jobs:
     permissions:
       contents: read
       pull-requests: read
+
+  # Commit types set the release version, so a mistyped commit is a wrong
+  # release. Merge commits keep each commit, so the title alone would not do.
+  lint-commits:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@b948419dd99f3fd78a6548d48f94e3df7f6bf3ed  # v6.2.1
+        with:
+          configFile: .commitlintrc.yml
