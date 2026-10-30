@@ -90,8 +90,9 @@ strspc check --static-only
 ```
 
 CI runs these through the reusable workflows in
-[SteerSpec/.github](https://github.com/SteerSpec/.github). Only `strspc check` resolves the realm's
-dependencies and verifies cross-realm references.
+[SteerSpec/.github](https://github.com/SteerSpec/.github). `strspc realm validate` compares the realm
+with its pinned dependencies; only `strspc check` verifies cross-realm references such as `inherits`
+and `overrides`.
 
 ## Conventions
 
