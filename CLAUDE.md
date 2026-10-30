@@ -36,6 +36,8 @@ rules are never edited, they are superseded.
 
 `.github/workflows/ci.yml` calls the org reusable `strspc-lint` workflow (SteerSpec/.github),
 which installs the released CLI and runs realm validation, entity lint and the lifecycle diff.
+It also calls `strspc-check`, which resolves the realm's dependencies and verifies cross-realm
+references using `.strspc/config.yaml` (provider null, so no AI evaluation).
 Commits use Conventional Commits.
 
 <!-- STEERSPEC:BEGIN:org-standards -->
