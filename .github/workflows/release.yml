@@ -1,0 +1,98 @@
+name: Release
+
+# The realm version is the release version. A push to main (the develop -> main
+# merge) tags v<realm.version> and publishes a GitHub release with the rules as
+# archives. Nothing pins this realm yet, so there is no publish or pin step.
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  # A job of its own: the CLI tracks the latest release, so it runs without the
+  # write token the release job holds.
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: SteerSpec/strspc-CLI/.github/actions/setup-strspc@1ce43e4484d9451083c0774a9926178889d684f2  # CLI #92
+        with:
+          version: ${{ vars.STRSPC_CLI_VERSION || 'latest' }}
+
+      - name: Validate realm and entity files
+        run: strspc realm validate rules/ --recursive --strict
+
+  release:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      # If the tag already exists on another commit (docs-only or promotion
+      # merges), skip the release instead of failing. If it exists on this
+      # commit, a previous run tagged and then failed before publishing: resume
+      # so the release completes.
+      - name: Read realm version and create tag
+        id: tag
+        run: |
+          set -euo pipefail
+          VERSION="$(jq -r '.realm.version' rules/realm.json)"
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::realm.version '${VERSION}' is not a release semver" >&2
+            exit 1
+          fi
+          TAG="v${VERSION}"
+          {
+            echo "version=${VERSION}"
+            echo "tag=${TAG}"
+          } >> "$GITHUB_OUTPUT"
+          if git fetch --quiet origin "refs/tags/${TAG}:refs/tags/${TAG}" 2>/dev/null; then
+            TAG_SHA="$(git rev-parse "refs/tags/${TAG}^{commit}")"
+            if [[ "${TAG_SHA}" == "${GITHUB_SHA}" ]]; then
+              echo "exists=false" >> "$GITHUB_OUTPUT"
+              echo "::notice::Tag ${TAG} already points at ${GITHUB_SHA}; resuming release"
+              exit 0
+            fi
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Tag ${TAG} already exists on ${TAG_SHA}; skipping release"
+            exit 0
+          fi
+          echo "exists=false" >> "$GITHUB_OUTPUT"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "${TAG}" -m "Release ${TAG}"
+          git push origin "${TAG}"
+
+      - name: Package rules
+        if: steps.tag.outputs.exists != 'true'
+        env:
+          VERSION: ${{ steps.tag.outputs.version }}
+        run: |
+          tar -czf "strspc-spec-${VERSION}.tar.gz" rules/ LICENSE
+          zip -r "strspc-spec-${VERSION}.zip" rules/ LICENSE
+
+      - name: Create release
+        if: steps.tag.outputs.exists != 'true'
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64  # v3.0.3
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          generate_release_notes: true
+          files: |
+            strspc-spec-*.tar.gz
+            strspc-spec-*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
