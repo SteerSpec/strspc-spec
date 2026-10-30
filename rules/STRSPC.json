@@ -6,15 +6,15 @@
     "description": "The SteerSpec platform: the rule format (strspc-rules), the enforcement engine (strspc-manager), the CLI, the configuration sync tool and the planned cloud service. Rules here are cross-cutting; each component owns its own realm."
   },
   "rule_set": {
-    "version": "0.1.7",
-    "timestamp": "2026-10-19T19:56:29Z",
-    "hash": "blake3:dba0c3183c113ab6cd7db7480d9b762832effef0ee0715bc7516ea3e233264e4"
+    "version": "0.5.0",
+    "timestamp": "2026-10-30T17:08:26Z",
+    "hash": "blake3:7735f09dd1d2f6f5e7bc5108df0658e051f07930dfdc43f8460329f608ea8c89"
   },
   "rules": [
     {
       "id": "STRSPC-001",
       "revision": 0,
-      "state": "D",
+      "state": "P",
       "body": "Dependencies MUST point downward only: strspc-rules is consumed by strspc-manager, which is imported by strspc-CLI and strspc-cloud, and a lower tier MUST NOT import a higher one.",
       "added_by": "@pleberre",
       "added_at": "2026-10-19",
@@ -23,7 +23,7 @@
     {
       "id": "STRSPC-002",
       "revision": 0,
-      "state": "D",
+      "state": "P",
       "body": "Releases MUST land upstream first (strspc-rules, then strspc-manager, then strspc-CLI and strspc-cloud), each consumer pinning a released version of the tier it depends on.",
       "added_by": "@pleberre",
       "added_at": "2026-10-19",
@@ -50,7 +50,7 @@
     {
       "id": "STRSPC-005",
       "revision": 0,
-      "state": "D",
+      "state": "P",
       "body": "A Published or Implemented rule MUST NOT be edited; a change MUST be expressed as a new rule that supersedes it.",
       "added_by": "@pleberre",
       "added_at": "2026-10-19",
@@ -59,7 +59,7 @@
     {
       "id": "STRSPC-006",
       "revision": 0,
-      "state": "D",
+      "state": "P",
       "body": "Rule validation, diffing, evaluation and resolution logic MUST live in strspc-manager, and the CLI and cloud tiers MUST only present its results.",
       "added_by": "@pleberre",
       "added_at": "2026-10-19",
