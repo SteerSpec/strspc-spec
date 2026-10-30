@@ -2,7 +2,9 @@ name: Release Please
 
 # Keeps a release PR open against main that sets realm.version and the changelog
 # from the conventional commits promoted to main. Merging it creates the vX.Y.Z
-# tag and GitHub release, and the tag push runs release.yml.
+# tag and GitHub release, and the jobs below attach the rules as archives. They
+# run here, gated on release_created, rather than on a tag push: this definition
+# comes from main, while a tag trigger would run whatever the tagged commit holds.
 
 on:
   push:
@@ -14,6 +16,9 @@ permissions: {}
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
     steps:
       - name: Mint a GitHub App token
         # steerspec-sync App: its PRs trigger CI (unlike GITHUB_TOKEN) and its API
@@ -26,12 +31,73 @@ jobs:
           permission-contents: write
           permission-pull-requests: write
 
-      - uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7  # v5.0.0
+      - id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7  # v5.0.0
         with:
-          # Not GITHUB_TOKEN: its tag pushes would not trigger release.yml and its
-          # PRs get no CI. Not a PAT either: PAT commits are unsigned.
+          # Not GITHUB_TOKEN: its PRs get no CI. Not a PAT either: PAT commits are
+          # unsigned.
           token: ${{ steps.app.outputs.token }}
           # Default branch is develop; pin releases to main (promotion target).
           target-branch: main
           config-file: release-please-config.json
           manifest-file: .release-please-manifest.json
+
+  # A job of its own: the CLI tracks the latest release, so it runs without the
+  # write token the upload job holds.
+  validate:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+          persist-credentials: false
+
+      - name: realm.version matches tag
+        env:
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          VERSION="$(jq -r '.realm.version' rules/realm.json)"
+          if [ "v${VERSION}" != "$TAG" ]; then
+            echo "::error::realm.version (${VERSION}) does not match tag $TAG"
+            exit 1
+          fi
+
+      - uses: SteerSpec/strspc-CLI/.github/actions/setup-strspc@1ce43e4484d9451083c0774a9926178889d684f2  # CLI #92
+        with:
+          version: ${{ vars.STRSPC_CLI_VERSION || 'latest' }}
+
+      - name: Validate realm and entity files
+        run: strspc realm validate rules/ --recursive --strict
+
+  upload:
+    needs: [release-please, validate]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ needs.release-please.outputs.tag_name }}
+          persist-credentials: false
+
+      - name: Package rules
+        env:
+          TAG: ${{ needs.release-please.outputs.tag_name }}
+        run: |
+          tar -czf "strspc-spec-${TAG#v}.tar.gz" rules/ LICENSE
+          zip -r "strspc-spec-${TAG#v}.zip" rules/ LICENSE
+
+      - name: Attach archives to the release
+        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64  # v3.0.3
+        with:
+          tag_name: ${{ needs.release-please.outputs.tag_name }}
+          fail_on_unmatched_files: true
+          files: |
+            strspc-spec-*.tar.gz
+            strspc-spec-*.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

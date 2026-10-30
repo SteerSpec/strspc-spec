@@ -45,7 +45,7 @@ Commits use Conventional Commits.
 `develop` is the default branch. Feature branches go to `develop` by PR. A
 `chore: promote develop to main` PR, merged with a merge commit, carries the bundle to `main`.
 release-please then opens a release PR that sets `realm.version` and `CHANGELOG.md`; merging it
-tags and publishes, and `.github/workflows/release.yml` attaches the rules as archives.
+tags and publishes, and `.github/workflows/release-please.yml` attaches the rules as archives.
 
 Never bump `realm.version` by hand. Commit types set it: `feat(rules):` for adding or promoting a
 rule (minor), `fix(rules):` for correcting a Draft rule (patch), `feat(rules)!:` for a breaking
