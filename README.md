@@ -57,8 +57,8 @@ consumers.
 These are summaries; [`rules/STRSPC.json`](rules/STRSPC.json) holds the normative text.
 
 > [!NOTE]
-> STRSPC-005 is Implemented: `strspc diff` enforces it in CI. STRSPC-001, 002 and 006 are Published
-> and 003 and 004 are Draft, so CI doesn't enforce those yet.
+> STRSPC-005 is Implemented: `strspc diff` enforces it in CI. The other five rules are Published, so
+> CI doesn't enforce them yet.
 
 ## Where rules live
 
