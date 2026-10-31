@@ -49,9 +49,9 @@ tags and publishes, and `.github/workflows/release-please.yml` attaches the rule
 
 Never bump `realm.version` by hand. PR title types set it: `feat(rules):` for adding or promoting a
 rule (minor), `fix(rules):` for correcting a Draft rule (patch), `feat(rules)!:` for a breaking
-change. `docs:`, `ci:` and `chore:` do not release. CI checks PR titles, and exempts release PRs
-and pushes to `main` from the lifecycle diff: they aggregate steps already validated on the way
-into `develop`.
+change. `docs:`, `ci:` and `chore:` do not release. CI checks PR titles, and exempts the `develop`
+to `main` promotion PR and pushes to `main` from the lifecycle diff: they aggregate steps already
+validated on the way into `develop`. Any other PR into `main` is checked.
 
 ## SteerSpec org standards
 

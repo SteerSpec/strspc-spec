@@ -1,14 +1,17 @@
 <div align="center">
 
+<img src="https://steerspec.dev/assets/logo.svg" alt="SteerSpec logo" width="96" height="96">
+
 # SteerSpec Platform
 
 **The rules that span every SteerSpec repository, written as a SteerSpec realm.**
 
 [![CI](https://github.com/SteerSpec/strspc-spec/actions/workflows/ci.yml/badge.svg)](https://github.com/SteerSpec/strspc-spec/actions/workflows/ci.yml)
-[![Realm version](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FSteerSpec%2Fstrspc-spec%2Fmain%2Frules%2Frealm.json&query=%24.realm.version&label=realm&color=4c1)](rules/realm.json)
+[![Release](https://img.shields.io/github/v/release/SteerSpec/strspc-spec)](https://github.com/SteerSpec/strspc-spec/releases)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
-[Architecture](#architecture) · [Rules](#rules) · [Where rules live](#where-rules-live) · [Working with the rules](#working-with-the-rules) · [Releases](#branching-and-releases) · [Conventions](#conventions)
+[Architecture](#architecture) · [Rules](#rules) · [Where rules live](#where-rules-live) · [Working with the rules](#working-with-the-rules) · [Layout](#layout) ·
+[Releases](#branching-and-releases) · [Conventions](#conventions) · [Contributing](#contributing)
 
 </div>
 
@@ -45,20 +48,17 @@ consumers.
 
 ## Rules
 
-| ID | Topic | Rule |
-| -- | ----- | ---- |
-| STRSPC-001 | **Tier direction** | Dependencies point downward only: rules → manager → CLI / cloud |
-| STRSPC-002 | **Release order** | Releases land upstream first, each consumer pinning a released version |
-| STRSPC-003 | **Realm ownership** | Every repository that ships platform code or rules owns a realm; non-core realms depend on core |
-| STRSPC-004 | **CI validation** | Every realm-owning repository's CI validates its realm and lifecycle per PR |
-| STRSPC-005 | **Rule immutability** | Published and Implemented rules are never edited, only superseded |
-| STRSPC-006 | **Logic placement** | Rule logic lives in strspc-manager; CLI and cloud only present its results |
+| ID | Topic | Rule | State |
+| -- | ----- | ---- | ----- |
+| STRSPC-001 | **Tier direction** | Dependencies point downward only: rules → manager → CLI / cloud | Published |
+| STRSPC-002 | **Release order** | Releases land upstream first, each consumer pinning a released version | Published |
+| STRSPC-003 | **Realm ownership** | Every repository that ships platform code or rules owns a realm; non-core realms depend on core | Draft |
+| STRSPC-004 | **CI validation** | Every realm-owning repository's CI validates its realm and lifecycle per PR | Draft |
+| STRSPC-005 | **Rule immutability** | Published and Implemented rules are never edited, only superseded | Implemented |
+| STRSPC-006 | **Logic placement** | Rule logic lives in strspc-manager; CLI and cloud only present its results | Published |
 
-These are summaries; [`rules/STRSPC.json`](rules/STRSPC.json) holds the normative text.
-
-> [!NOTE]
-> STRSPC-005 is Implemented: `strspc diff` enforces it in CI. STRSPC-001, 002 and 006 are Published
-> and 003 and 004 are Draft, so CI doesn't enforce those yet.
+These are summaries; [`rules/STRSPC.json`](rules/STRSPC.json) holds the normative text. `strspc diff`
+enforces STRSPC-005 in CI, and CI doesn't enforce the others yet.
 
 ## Where rules live
 
@@ -71,20 +71,8 @@ Each component's rules live with its code:
 | `dev.steerspec.manager` | [strspc-manager](https://github.com/SteerSpec/strspc-manager) | enforcement engine modules and Go conventions |
 | `dev.steerspec.cli` | [strspc-CLI](https://github.com/SteerSpec/strspc-CLI) | commands, configuration, conventions |
 | `dev.steerspec.sync` | [strspc-sync](https://github.com/SteerSpec/strspc-sync) | configuration sync tool and actions |
-
-## Layout
-
-```text
-strspc-spec/
-├── rules/
-│   ├── realm.json      # dev.steerspec.platform, depends on dev.steerspec.core@1.12.0
-│   ├── STRSPC.json     # the STRSPC entity
-│   └── _schema/        # schemas from steerspec.dev
-├── .strspc/
-│   └── config.yaml     # strspc check configuration
-├── CLAUDE.md
-└── LICENSE
-```
+| `dev.steerspec.prreview` | [strspc-pr-review](https://github.com/SteerSpec/strspc-pr-review) | automated pull request approval |
+| `dev.steerspec.cloud` | strspc-cloud (private) | hosted service, planned |
 
 ## Working with the rules
 
@@ -115,6 +103,23 @@ CI runs these through the reusable workflows in
 with its pinned dependencies; only `strspc check` verifies cross-realm references such as `inherits`
 and `overrides`.
 
+## Layout
+
+```text
+strspc-spec/
+├── rules/
+│   ├── realm.json      # the dev.steerspec.platform manifest and its core pin
+│   ├── STRSPC.json     # the STRSPC entity
+│   └── _schema/        # schemas from steerspec.dev
+├── .strspc/
+│   └── config.yaml     # strspc check configuration
+├── .github/workflows/  # CI, release-please and pull request approval
+├── release-please-config.json
+├── .release-please-manifest.json
+├── CLAUDE.md
+└── LICENSE
+```
+
 ## Branching and releases
 
 `develop` is the default branch and collects the changes for the next release; `main` only moves
@@ -128,6 +133,11 @@ when a release is prepared:
    against `main` that sets `realm.version` and updates `CHANGELOG.md`.
 4. Merging it tags `v<realm.version>` and publishes a GitHub release with the rules as archives.
 
+> [!IMPORTANT]
+> Promote `develop` before merging a release pull request. release-please stops reading at the last
+> release commit, by date, so a `feat:` or `fix:` left on `develop` while a release merges is dropped
+> from the next release.
+
 Title types set the version, so rule changes need the right one:
 
 | Change | Title | Version |
@@ -139,8 +149,9 @@ Title types set the version, so rule changes need the right one:
 
 `main` holds the released `realm.version`. `develop` is not back-merged, so its copy stays behind.
 
-Release pull requests skip the `strspc diff` lifecycle check: they aggregate transitions that were
-validated one pull request at a time on the way into `develop`.
+The `develop` to `main` promotion pull request and pushes to `main` skip the `strspc diff` lifecycle
+check: they aggregate transitions that were validated one pull request at a time on the way into
+`develop`. Any other pull request into `main` is checked.
 
 ## Conventions
 
@@ -163,6 +174,9 @@ flowchart LR
     class P published
     class I implemented
 ```
+
+A rule can also leave this path: a dropped Draft becomes Abandoned, a rule that must be removed is
+Retired, and one no longer in force is Terminated.
 
 | Topic | Convention |
 | ----- | ---------- |
