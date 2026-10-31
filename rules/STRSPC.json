@@ -6,9 +6,9 @@
     "description": "The SteerSpec platform: the rule format (strspc-rules), the enforcement engine (strspc-manager), the CLI, the configuration sync tool and the planned cloud service. Rules here are cross-cutting; each component owns its own realm."
   },
   "rule_set": {
-    "version": "0.6.0",
-    "timestamp": "2026-10-30T17:17:03Z",
-    "hash": "blake3:565b1074b695a20dad350490ef9f2772871a1c3af8321ff0b89ba7c4879bd126"
+    "version": "0.6.2",
+    "timestamp": "2026-10-31T07:51:01Z",
+    "hash": "blake3:1f6f908c7c33db2690a3ae45beda63ba94c722fc94deae846daf275b558c342e"
   },
   "rules": [
     {
@@ -31,18 +31,18 @@
     },
     {
       "id": "STRSPC-003",
-      "revision": 0,
+      "revision": 1,
       "state": "D",
-      "body": "Every SteerSpec repository MUST own its rules as a SteerSpec realm in that repository, and every realm other than dev.steerspec.core MUST depend on dev.steerspec.core at a released version.",
+      "body": "Every SteerSpec repository that ships platform code or rules MUST own its rules as a SteerSpec realm in that repository, and every realm other than dev.steerspec.core MUST depend on dev.steerspec.core at a released version.",
       "added_by": "@pleberre",
       "added_at": "2026-10-19",
       "supersedes": null
     },
     {
       "id": "STRSPC-004",
-      "revision": 0,
+      "revision": 1,
       "state": "D",
-      "body": "Every repository's CI MUST validate its realm and the lifecycle of its rules on each pull request.",
+      "body": "Every realm-owning repository's CI MUST validate its realm and the lifecycle of its rules on each pull request.",
       "added_by": "@pleberre",
       "added_at": "2026-10-19",
       "supersedes": null
