@@ -49,8 +49,8 @@ consumers.
 | -- | ----- | ---- |
 | STRSPC-001 | **Tier direction** | Dependencies point downward only: rules → manager → CLI / cloud |
 | STRSPC-002 | **Release order** | Releases land upstream first, each consumer pinning a released version |
-| STRSPC-003 | **Realm ownership** | Every repository owns a realm; non-core realms depend on core |
-| STRSPC-004 | **CI validation** | Every repository's CI validates its realm and lifecycle per PR |
+| STRSPC-003 | **Realm ownership** | Every repository that ships platform code or rules owns a realm; non-core realms depend on core |
+| STRSPC-004 | **CI validation** | Every realm-owning repository's CI validates its realm and lifecycle per PR |
 | STRSPC-005 | **Rule immutability** | Published and Implemented rules are never edited, only superseded |
 | STRSPC-006 | **Logic placement** | Rule logic lives in strspc-manager; CLI and cloud only present its results |
 
