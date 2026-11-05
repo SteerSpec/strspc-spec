@@ -4,14 +4,11 @@
 
 # SteerSpec Platform
 
-**The rules that span every SteerSpec repository, written as a SteerSpec realm.**
+**The rules that span every SteerSpec repository, written as a SteerSpec realm, for engineers who build or maintain SteerSpec components.**
 
-[![CI](https://github.com/SteerSpec/strspc-spec/actions/workflows/ci.yml/badge.svg)](https://github.com/SteerSpec/strspc-spec/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/SteerSpec/strspc-spec)](https://github.com/SteerSpec/strspc-spec/releases)
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
-
-[Architecture](#architecture) · [Rules](#rules) · [Where rules live](#where-rules-live) · [Working with the rules](#working-with-the-rules) · [Layout](#layout) ·
-[Releases](#branching-and-releases) · [Conventions](#conventions) · [Contributing](#contributing)
+[![CI](https://img.shields.io/github/actions/workflow/status/SteerSpec/strspc-spec/ci.yml?label=CI&labelColor=161B22&color=161B22)](https://github.com/SteerSpec/strspc-spec/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/SteerSpec/strspc-spec?labelColor=161B22&color=161B22)](https://github.com/SteerSpec/strspc-spec/releases)
+[![License](https://img.shields.io/github/license/SteerSpec/strspc-spec?labelColor=161B22&color=161B22)](LICENSE)
 
 </div>
 
@@ -19,6 +16,33 @@
 enforcement. This repository is the `dev.steerspec.platform` realm. It covers what no single
 component can own: how the tiers depend on each other, the order they release in, and where rule
 logic lives.
+
+The latest release is [v1.1.0](https://github.com/SteerSpec/strspc-spec/releases/tag/v1.1.0), with
+the rules attached as archives. Each pull request runs realm validation, entity lint and the
+lifecycle diff in CI. Only STRSPC-005 is enforced that way so far (see [Rules](#rules)).
+
+## Install
+
+The rules are JSON files in this repository, and the `strspc` CLI edits and validates them. Install
+the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI#install) with Homebrew:
+
+```bash
+brew install --cask SteerSpec/tap/strspc
+```
+
+## Where to go
+
+| If you want to | Go to |
+| -------------- | ----- |
+| See how the tiers depend on each other | [Architecture](#architecture) |
+| Read the platform rules | [Rules](#rules), or [`rules/STRSPC.json`](rules/STRSPC.json) for the normative text |
+| Find the rules of a component | [Where rules live](#where-rules-live) |
+| Add or change a rule | [Working with the rules](#working-with-the-rules) |
+| Find a file | [Layout](#layout) |
+| Understand how a change reaches a release | [Branching and releases](#branching-and-releases) |
+| Check commit, version and rule-state conventions | [Conventions](#conventions) |
+| Report a vulnerability | [Security](#security) |
+| Contribute | [Community](#community) |
 
 ## Architecture
 
@@ -36,11 +60,11 @@ flowchart LR
         M -.->|imported by| K
     end
 
-    classDef shipped fill:#1f6feb,stroke:#1f6feb,color:#ffffff
-    classDef planned fill:#6e7781,stroke:#6e7781,color:#ffffff
+    classDef shipped fill:#238636,stroke:#3FB950,color:#E6EDF3
+    classDef planned fill:#161B22,stroke:#6E7681,color:#E6EDF3
     class R,M,C shipped
     class K planned
-    style platform fill:transparent,stroke:#6e7781,stroke-dasharray:5 5
+    style platform fill:transparent,stroke:#6E7681,stroke-dasharray:5 5
 ```
 
 Dependencies point one way, and releases land in the same order: rules, then manager, then its
@@ -76,16 +100,10 @@ Each component's rules live with its code:
 
 ## Working with the rules
 
-Install the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI):
+Edit entity files only through the `strspc` CLI (see [Install](#install)), so versions and hashes stay consistent:
 
 ```bash
-brew install --cask SteerSpec/tap/strspc
-```
-
-Edit entity files only through it, so versions and hashes stay consistent:
-
-```bash
-strspc rule add STRSPC --dir rules --body "..." --added-by @you
+strspc rule add STRSPC --dir rules --body "..." --added-by github:you
 strspc rule promote STRSPC-001 --dir rules
 ```
 
@@ -120,7 +138,9 @@ strspc-spec/
 └── LICENSE
 ```
 
-## Branching and releases
+## Governance
+
+### Branching and releases
 
 `develop` is the default branch and collects the changes for the next release; `main` only moves
 when a release is prepared:
@@ -153,7 +173,7 @@ The `develop` to `main` promotion pull request and pushes to `main` skip the `st
 check: they aggregate transitions that were validated one pull request at a time on the way into
 `develop`. Any other pull request into `main` is checked.
 
-## Conventions
+### Conventions
 
 Rules move one state per pull request. Published and Implemented rules are never edited, they are
 superseded.
@@ -167,9 +187,9 @@ flowchart LR
     D -->|one PR| P
     P -->|one PR| I
 
-    classDef draft fill:#6e7781,stroke:#6e7781,color:#ffffff
-    classDef published fill:#1f6feb,stroke:#1f6feb,color:#ffffff
-    classDef implemented fill:#1a7f37,stroke:#1a7f37,color:#ffffff
+    classDef draft fill:#161B22,stroke:#6E7681,color:#E6EDF3
+    classDef published fill:#21262D,stroke:#3FB950,color:#E6EDF3
+    classDef implemented fill:#238636,stroke:#3FB950,color:#E6EDF3
     class D draft
     class P published
     class I implemented
@@ -184,9 +204,17 @@ Retired, and one no longer in force is Terminated.
 | **Versions** | `realm.version` in `rules/realm.json` is the specification version, in [SemVer](https://semver.org/) form. release-please sets it, and `v<realm.version>` is the release tag |
 | **Dependencies** | The core realm is pinned to one exact released version |
 
-## Contributing
+## Security
 
-See the [SteerSpec contributing guide](https://github.com/SteerSpec/.github/blob/main/CONTRIBUTING.md).
+Report a vulnerability privately: on this repository, go to **Security**, then **Report a
+vulnerability**. Do not open a public issue or pull request for it. The
+[SteerSpec security policy](https://github.com/SteerSpec/.github/blob/main/SECURITY.md) covers this
+repository.
+
+## Community
+
+See the [SteerSpec contributing guide](https://github.com/SteerSpec/.github/blob/main/CONTRIBUTING.md)
+and the [code of conduct](https://github.com/SteerSpec/.github/blob/main/CODE_OF_CONDUCT.md).
 
 ## License
 
