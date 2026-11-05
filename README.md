@@ -24,7 +24,7 @@ lifecycle diff in CI. Only STRSPC-005 is enforced that way so far (see [Rules](#
 ## Install
 
 The rules are JSON files in this repository, and the `strspc` CLI edits and validates them. Install
-the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI#install) with Homebrew:
+the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI#installation) with Homebrew:
 
 ```bash
 brew install --cask SteerSpec/tap/strspc
