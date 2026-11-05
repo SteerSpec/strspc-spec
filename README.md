@@ -18,8 +18,11 @@ component can own: how the tiers depend on each other, the order they release in
 logic lives.
 
 The latest release is [v1.1.0](https://github.com/SteerSpec/strspc-spec/releases/tag/v1.1.0), with
-the rules attached as archives. Each pull request runs realm validation, entity lint and the
-lifecycle diff in CI. Only STRSPC-005 is enforced that way so far (see [Rules](#rules)).
+the rules attached as archives. The [Rules](#rules) table describes `develop`, so it is ahead of that
+release: STRSPC-003 and STRSPC-004 are Published there and still Draft in v1.1.0. On pull requests,
+CI runs realm validation, entity lint and the lifecycle diff, except that the `develop` to `main`
+promotion and pushes to `main` skip the diff
+([`ci.yml` at c15ce48](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml)).
 
 ## Install
 
@@ -81,7 +84,7 @@ consumers.
 | STRSPC-005 | **Rule immutability** | Published and Implemented rules are never edited, only superseded | Implemented |
 | STRSPC-006 | **Logic placement** | Rule logic lives in strspc-manager; CLI and cloud only present its results | Published |
 
-These are summaries; [`rules/STRSPC.json`](rules/STRSPC.json) holds the normative text. `strspc diff`
+These are summaries; [`rules/STRSPC.json`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/rules/STRSPC.json) holds the normative text. `strspc diff`
 enforces STRSPC-005 in CI, and CI doesn't enforce the others yet.
 
 ## Where rules live
