@@ -48,7 +48,9 @@ brew install --cask SteerSpec/tap/strspc
 
 ## Governance
 
-Open source software by Consulare. See [NOTICE](NOTICE).
+Open source software by Consulare.
+
+The copyright holder is named in [NOTICE](NOTICE).
 
 Licensed under Apache 2.0, see [LICENSE](LICENSE). Changes go through pull requests, as described in
 [Branching and releases](docs/releases.md) and [Conventions](docs/conventions.md).
