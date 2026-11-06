@@ -26,6 +26,8 @@ and `overrides`.
 
 ## Layout
 
+The main files and directories, not every file:
+
 ```text
 strspc-spec/
 ├── rules/
@@ -35,6 +37,7 @@ strspc-spec/
 ├── .strspc/
 │   └── config.yaml     # strspc check configuration
 ├── .github/workflows/  # CI, release-please and pull request approval
+├── docs/               # reference pages linked from the README
 ├── release-please-config.json
 ├── .release-please-manifest.json
 ├── CLAUDE.md

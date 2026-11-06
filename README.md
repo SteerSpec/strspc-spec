@@ -17,17 +17,15 @@ enforcement. This repository is the `dev.steerspec.platform` realm. It covers wh
 component can own: how the tiers depend on each other, the order they release in, and where rule
 logic lives.
 
-The latest release is [v1.1.0](https://github.com/SteerSpec/strspc-spec/releases/tag/v1.1.0), with
-the rules attached as archives. The [Rules table](docs/rules.md) describes `develop`, so it is ahead of that
-release: STRSPC-003 and STRSPC-004 are Published there and still Draft in v1.1.0. On pull requests,
-CI runs realm validation, entity lint and the lifecycle diff, except that the `develop` to `main`
-promotion and pushes to `main` skip the diff
-([`ci.yml` at c15ce48](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml)).
+The rules ship as archives attached to each [release](https://github.com/SteerSpec/strspc-spec/releases/latest).
+The [Rules table](docs/rules.md) describes `develop`, so it can be ahead of the latest release. On
+pull requests, CI runs realm validation, entity lint and the lifecycle diff, with two exceptions
+listed in [Branching and releases](docs/releases.md) ([`ci.yml`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml)).
 
 ## Install
 
 The rules are JSON files in this repository, and the `strspc` CLI edits and validates them. Install
-the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI#installation) with Homebrew:
+the [`strspc` CLI](https://github.com/SteerSpec/strspc-CLI#installation) with Homebrew (macOS; the CLI README lists other routes):
 
 ```bash
 brew install --cask SteerSpec/tap/strspc

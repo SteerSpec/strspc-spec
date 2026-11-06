@@ -11,7 +11,7 @@ when a release is prepared:
    **merge commit**: release-please reads the individual commits, and a squash would hide them.
 3. [release-please](https://github.com/googleapis/release-please) opens a release pull request
    against `main` that sets `realm.version` and updates `CHANGELOG.md`.
-4. Merging it tags `v<realm.version>` and publishes a GitHub release with the rules as archives.
+4. Merging it tags `v<realm.version>` and publishes a GitHub release with the rules as archives ([`release-please.yml`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/release-please.yml)).
 
 > [!IMPORTANT]
 > Promote `develop` before merging a release pull request. release-please stops reading at the last
@@ -30,5 +30,5 @@ Title types set the version, so rule changes need the right one:
 `main` holds the released `realm.version`. `develop` is not back-merged, so its copy stays behind.
 
 The `develop` to `main` promotion pull request and pushes to `main` skip the `strspc diff` lifecycle
-check: they aggregate transitions that were validated one pull request at a time on the way into
+check ([`ci.yml`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml)): they aggregate transitions that were validated one pull request at a time on the way into
 `develop`. Any other pull request into `main` is checked.
