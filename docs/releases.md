@@ -14,9 +14,9 @@ when a release is prepared:
 4. Merging it tags `v<realm.version>` and publishes a GitHub release with the rules as archives ([`release-please.yml`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/release-please.yml)).
 
 > [!IMPORTANT]
-> Promote `develop` before merging a release pull request. release-please stops reading at the last
-> release commit, by date, so a `feat:` or `fix:` left on `develop` while a release merges is dropped
-> from the next release.
+> Promote `develop` before merging a release pull request. The release pull request is opened
+> against `main`, and release-please derives the version from the commits that reach `main`, so a
+> `feat:` or `fix:` still on `develop` is not part of that release.
 
 Title types set the version, so rule changes need the right one:
 
