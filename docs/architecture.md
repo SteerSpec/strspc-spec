@@ -24,7 +24,7 @@ flowchart LR
 ```
 
 Dependencies point one way, and releases land in the same order: rules, then manager, then its
-consumers.
+consumers (STRSPC-001 and STRSPC-002 in [`rules/STRSPC.json`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/rules/STRSPC.json)).
 
 
 ## Where rules live
@@ -39,4 +39,4 @@ Each component's rules live with its code:
 | `dev.steerspec.cli` | [strspc-CLI](https://github.com/SteerSpec/strspc-CLI) | commands, configuration, conventions |
 | `dev.steerspec.sync` | [strspc-sync](https://github.com/SteerSpec/strspc-sync) | configuration sync tool and actions |
 | `dev.steerspec.prreview` | [strspc-pr-review](https://github.com/SteerSpec/strspc-pr-review) | automated pull request approval |
-| `dev.steerspec.cloud` | not yet public | hosted service, planned |
+| hosted service | not yet public | planned |

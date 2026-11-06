@@ -30,3 +30,5 @@ Retired, and one no longer in force is Terminated.
 | **Commits** | [Conventional Commits](https://www.conventionalcommits.org/), as `type(scope): subject`. [CI checks pull request titles](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml) |
 | **Versions** | `realm.version` in `rules/realm.json` is the specification version, in [SemVer](https://semver.org/) form. release-please sets it, and `v<realm.version>` is the release tag |
 | **Dependencies** | The core realm is pinned to one exact released version |
+
+Implemented means a CI check enforces the rule; see [`ci.yml`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml) for the checks that run.

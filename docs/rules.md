@@ -3,7 +3,7 @@
 [Back to the README](../README.md)
 
 The table describes `develop`, so it is ahead of the latest release: STRSPC-003 and STRSPC-004 are
-Published there and still Draft in the [v1.1.0 release](https://github.com/SteerSpec/strspc-spec/releases/tag/v1.1.0).
+Published there and still Draft in the tagged [`rules/STRSPC.json`](https://github.com/SteerSpec/strspc-spec/blob/v1.1.0/rules/STRSPC.json).
 
 | ID | Topic | Rule | State |
 | -- | ----- | ---- | ----- |
@@ -14,6 +14,6 @@ Published there and still Draft in the [v1.1.0 release](https://github.com/Steer
 | STRSPC-005 | **Rule immutability** | Published and Implemented rules are never edited, only superseded | Implemented |
 | STRSPC-006 | **Logic placement** | Rule logic lives in strspc-manager; CLI and cloud only present its results | Published |
 
-These are summaries; [`rules/STRSPC.json`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/rules/STRSPC.json) holds the normative text. `strspc diff` runs in [CI](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml) and checks that Published and Implemented rules are not edited (STRSPC-005). No CI check covers tier direction, release order or logic placement across repositories yet.
+These are summaries; [`rules/STRSPC.json`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/rules/STRSPC.json) holds the normative text. `strspc diff` runs in [CI](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml) and checks that Published and Implemented rules are not edited (STRSPC-005). No CI check covers tier direction, release order or logic placement across repositories yet ([`ci.yml`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml)).
 
 

@@ -33,7 +33,7 @@ strspc-spec/
 ├── rules/
 │   ├── realm.json      # the dev.steerspec.platform manifest and its core pin
 │   ├── STRSPC.json     # the STRSPC entity
-│   └── _schema/        # schemas from steerspec.dev
+│   └── _schema/        # schemas vendored from the pinned core release
 ├── .strspc/
 │   └── config.yaml     # strspc check configuration
 ├── .github/workflows/  # CI, release-please and pull request approval
