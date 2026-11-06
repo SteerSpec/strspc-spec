@@ -18,9 +18,10 @@ component can own: how the tiers depend on each other, the order they release in
 logic lives.
 
 The rules ship as archives attached to each [release](https://github.com/SteerSpec/strspc-spec/releases/latest).
-The [Rules table](docs/rules.md) describes `develop`, so it can be ahead of the latest release. On
-pull requests, CI runs realm validation, entity lint and the lifecycle diff, with two exceptions
-listed in [Branching and releases](docs/releases.md) ([`ci.yml`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml)).
+The [Rules table](docs/rules.md) describes `develop`, so it can be ahead of the latest release. CI
+runs realm validation, entity lint and the lifecycle diff on pull requests, except that the
+lifecycle diff is skipped for the `develop` to `main` promotion pull request and for pushes to `main`
+([`ci.yml`](https://github.com/SteerSpec/strspc-spec/blob/c15ce48f2120e2a1e712a8a472814c5044d212c7/.github/workflows/ci.yml)).
 
 ## Install
 
@@ -54,10 +55,9 @@ Licensed under Apache 2.0, see [LICENSE](LICENSE). Changes go through pull reque
 
 ## Security
 
-Report a vulnerability privately: on this repository, go to **Security**, then **Report a
-vulnerability**. Do not open a public issue or pull request for it. The
+Report a vulnerability privately, never in a public issue, discussion or pull request. The
 [SteerSpec security policy](https://github.com/SteerSpec/.github/blob/main/SECURITY.md) covers this
-repository.
+repository and gives the private reporting route.
 
 ## Community
 
