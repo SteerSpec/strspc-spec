@@ -89,8 +89,8 @@ jobs:
         env:
           TAG: ${{ needs.release-please.outputs.tag_name }}
         run: |
-          tar -czf "strspc-spec-${TAG#v}.tar.gz" rules/ LICENSE
-          zip -r "strspc-spec-${TAG#v}.zip" rules/ LICENSE
+          tar -czf "strspc-spec-${TAG#v}.tar.gz" rules/ LICENSE NOTICE
+          zip -r "strspc-spec-${TAG#v}.zip" rules/ LICENSE NOTICE
 
       - name: Attach archives to the release
         uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64  # v3.0.3
