@@ -53,6 +53,7 @@ change. `docs:`, `ci:` and `chore:` do not release. CI checks PR titles, and exe
 to `main` promotion PR and pushes to `main` from the lifecycle diff: they aggregate steps already
 validated on the way into `develop`. Any other PR into `main` is checked.
 
+<!-- STEERSPEC:BEGIN:org-standards -->
 ## SteerSpec org standards
 
 Managed by [SteerSpec/.claude](https://github.com/SteerSpec/.claude) through
