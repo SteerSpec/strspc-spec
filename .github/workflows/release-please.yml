@@ -67,7 +67,7 @@ jobs:
             exit 1
           fi
 
-      - uses: SteerSpec/strspc-CLI/.github/actions/setup-strspc@1ce43e4484d9451083c0774a9926178889d684f2  # CLI #92
+      - uses: SteerSpec/strspc-CLI/.github/actions/setup-strspc@ce10040bd4342ed524f36874a0164dc13cb9ba93  # CLI #92
         with:
           version: ${{ vars.STRSPC_CLI_VERSION || 'latest' }}
 
@@ -93,7 +93,7 @@ jobs:
           zip -r "strspc-spec-${TAG#v}.zip" rules/ LICENSE NOTICE
 
       - name: Attach archives to the release
-        uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64  # v3.0.3
+        uses: softprops/action-gh-release@8a0cd651e5b2365bd640854a3fa5dfc70e4875f3  # v3.0.4
         with:
           tag_name: ${{ needs.release-please.outputs.tag_name }}
           fail_on_unmatched_files: true
