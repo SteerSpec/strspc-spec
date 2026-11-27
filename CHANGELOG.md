@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.2.0](https://github.com/SteerSpec/strspc-spec/compare/v1.1.0...v1.2.0) (2026-11-27)
+
+
+### Features
+
+* **rules:** promote STRSPC-003 and 004 to Published ([#41](https://github.com/SteerSpec/strspc-spec/issues/41)) ([a690397](https://github.com/SteerSpec/strspc-spec/commit/a690397b65e88ee5849976289ae4e8a2fe8915a7))
+
+
+### Bug Fixes
+
+* **rules:** scope STRSPC-003 and 004 to repositories they can apply to ([#38](https://github.com/SteerSpec/strspc-spec/issues/38)) ([29d2f35](https://github.com/SteerSpec/strspc-spec/commit/29d2f35740e71774d1153107314d86346795b7b3))
+
 ## [1.1.0](https://github.com/SteerSpec/strspc-spec/compare/v1.0.0...v1.1.0) (2026-10-30)
 
 
