@@ -102,3 +102,19 @@ jobs:
             strspc-spec-*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # main's release commits (changelog, realm.version, manifest) never reach
+  # develop otherwise. Opens a squash-only sync PR into develop; never merges.
+  sync-back:
+    needs: release-please
+    if: needs.release-please.outputs.release_created == 'true'
+    permissions:
+      contents: read
+    # Pinned to a commit, not @v1: this job hands the workflow the App private
+    # key, and a tag can be moved.
+    uses: SteerSpec/.github/.github/workflows/sync-back.yml@5c06ce25ceb6362acbb1c26d0d64d4e405cfcd24  # v1.3.0
+    with:
+      sha: ${{ needs.release-please.outputs.sha }}
+    secrets:
+      STEERSPEC_APP_ID: ${{ secrets.STEERSPEC_APP_ID }}
+      STEERSPEC_PRIVATE_KEY: ${{ secrets.STEERSPEC_PRIVATE_KEY }}
