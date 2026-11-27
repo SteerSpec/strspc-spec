@@ -110,7 +110,9 @@ jobs:
     if: needs.release-please.outputs.release_created == 'true'
     permissions:
       contents: read
-    uses: SteerSpec/.github/.github/workflows/sync-back.yml@v1
+    # Pinned to a commit, not @v1: this job hands the workflow the App private
+    # key, and a tag can be moved.
+    uses: SteerSpec/.github/.github/workflows/sync-back.yml@5c06ce25ceb6362acbb1c26d0d64d4e405cfcd24  # v1.3.0
     with:
       sha: ${{ needs.release-please.outputs.sha }}
     secrets:
