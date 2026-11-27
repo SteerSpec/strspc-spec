@@ -1,6 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://steerspec.dev/schemas/entity/v1.json",
+  "x-steerspec-core-version": "1.27.0",
   "title": "SteerSpec Entity File Schema",
   "description": "Full schema for SteerSpec entity files. Generated from core rule JSON files by tools/build-schema.py. Do not edit manually.",
   "type": "object",
@@ -40,6 +41,54 @@
         },
         "inherits": {
           "type": "string"
+        },
+        "visibility": {
+          "type": "string",
+          "enum": [
+            "private",
+            "protected",
+            "public"
+          ]
+        },
+        "standards": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "relation"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[a-z0-9]+(-[a-z0-9]+)*(\\.[a-z0-9]+(-[a-z0-9]+)*)+$"
+              },
+              "relation": {
+                "enum": [
+                  "implements",
+                  "derived_from"
+                ]
+              },
+              "version": {
+                "type": "string",
+                "minLength": 1
+              },
+              "url": {
+                "type": "string",
+                "minLength": 1
+              },
+              "realm": {
+                "type": "string",
+                "pattern": "^[a-z][a-z0-9]*(\\.[a-z][a-z0-9]*)*$"
+              },
+              "profile": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "additionalProperties": false
+          }
         }
       },
       "additionalProperties": false
@@ -139,6 +188,19 @@
                 "type": "null"
               }
             ]
+          },
+          "clause": {
+            "type": "string",
+            "minLength": 1
+          },
+          "profiles": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
           }
         },
         "additionalProperties": false
@@ -185,7 +247,10 @@
               "deprecation_notice",
               "supersedes",
               "extends",
-              "related"
+              "related",
+              "standard",
+              "structured",
+              "override_ack"
             ]
           },
           "content": {
