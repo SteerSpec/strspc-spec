@@ -112,7 +112,7 @@ jobs:
       contents: read
     # Pinned to a commit, not @v1: this job hands the workflow the App private
     # key, and a tag can be moved.
-    uses: SteerSpec/.github/.github/workflows/sync-back.yml@5c06ce25ceb6362acbb1c26d0d64d4e405cfcd24  # v1.3.0
+    uses: SteerSpec/.github/.github/workflows/sync-back.yml@45c512b1d2d0034f52db8c0efea9b64d03de2831  # v1.3.2
     with:
       sha: ${{ needs.release-please.outputs.sha }}
     secrets:
